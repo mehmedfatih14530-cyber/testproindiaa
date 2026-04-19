@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Article — TestPro India</title>
+<meta name="description" id="pageMeta" content="QA testing article on TestPro India">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .article-hero{padding:100px 5vw 60px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .article-layout{display:grid;grid-template-columns:1fr 300px;gap:3rem;max-width:var(--max);margin:0 auto;padding:3rem 5vw 5rem}
+  .article-content{min-width:0}
+  .article-content h2{font-size:1.5rem;margin:2rem 0 1rem}
+  .article-content h3{font-size:1.15rem;margin:1.5rem 0 .75rem}
+  .article-content p{margin-bottom:1.25rem;line-height:1.8;color:var(--ink2)}
+  .article-content ul,.article-content ol{padding-left:1.5rem;margin-bottom:1.25rem}
+  .article-content li{margin-bottom:.5rem;line-height:1.7;color:var(--ink2)}
+  .article-content pre{background:#1e1e2e;color:#cdd6f4;padding:1.25rem;border-radius:10px;overflow-x:auto;margin:1.5rem 0;font-size:.85rem;line-height:1.6}
+  .article-content code{font-family:monospace;background:rgba(0,0,0,.06);padding:2px 6px;border-radius:4px;font-size:.88em}
+  .article-content pre code{background:none;padding:0;font-size:inherit}
+  .sidebar{position:sticky;top:80px;align-self:start}
+  .sidebar-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+  .sidebar-card h4{font-size:.85rem;font-weight:700;margin-bottom:1rem;color:var(--ink)}
+  .related-link{display:block;font-size:.82rem;color:var(--ink2);padding:.5rem 0;border-bottom:1px solid var(--border);transition:color .2s}
+  .related-link:last-child{border:none}
+  .related-link:hover{color:var(--accent)}
+  .article-meta{display:flex;align-items:center;gap:1rem;font-size:.82rem;color:var(--muted);margin-bottom:2rem;flex-wrap:wrap}
+  .article-tag{font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:100px}
+  @media(max-width:768px){.article-layout{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div class="article-hero" id="articleHero">
+  <div style="max-width:760px;margin:0 auto">
+    <div class="breadcrumb"><a href="articles.html">Articles</a><span>/</span><span id="breadCat">Loading…</span></div>
+    <h1 id="articleTitle" style="font-size:clamp(1.6rem,3.5vw,2.4rem)">Loading article…</h1>
+    <div class="article-meta" id="articleMeta"></div>
+  </div>
+</div>
+<div class="article-layout">
+  <main class="article-content" id="articleBody">
+    <div style="color:var(--muted)">Loading…</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-slot ad-square"><div><p>Advertisement</p><small>300×250</small></div></div>
+    <div class="sidebar-card">
+      <h4>More Articles</h4>
+      <div id="relatedLinks"></div>
+    </div>
+    <div class="sidebar-card" style="background:linear-gradient(135deg,#f0fdf9,#e6f1fb)">
+      <h4>🎓 Free QA Courses</h4>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem">Level up your career with our structured learning paths.</p>
+      <a href="courses.html" class="btn btn-accent" style="font-size:.8rem;padding:8px 16px">View Courses</a>
+    </div>
+  </aside>
+</div>
+<div id="footer-placeholder"></div>
+<script src="shared.js"></script>
+<script>
+const CAT_STYLE={'Selenium':{bg:'rgba(0,102,255,.1)',tx:'#185FA5'},'ISTQB':{bg:'rgba(0,200,150,.1)',tx:'#008060'},'Career':{bg:'rgba(245,158,11,.1)',tx:'#854F0B'},'API Testing':{bg:'rgba(139,92,246,.1)',tx:'#534AB7'},'Performance':{bg:'rgba(239,68,68,.1)',tx:'#A32D2D'},'Salary':{bg:'rgba(16,185,129,.1)',tx:'#065F46'},'General':{bg:'rgba(107,114,128,.1)',tx:'#374151'}};
+async function load(){
+  const id=new URLSearchParams(location.search).get('id');
+  if(!id){document.getElementById('articleTitle').textContent='Article not found';return;}
+  try{
+    const r=await fetch('content.json?v='+Date.now());
+    const d=await r.json();
+    const art=d.articles.find(a=>a.id===id&&a.status==='published');
+    if(!art){document.getElementById('articleTitle').textContent='Article not found';return;}
+    document.title=art.title+' — TestPro India';
+    document.getElementById('pageMeta').content=art.meta||art.excerpt||'';
+    document.getElementById('pageTitle').textContent=art.title+' — TestPro India';
+    document.getElementById('articleTitle').textContent=art.title;
+    document.getElementById('breadCat').textContent=art.category;
+    const c=CAT_STYLE[art.category]||{bg:'rgba(107,114,128,.1)',tx:'#374151'};
+    document.getElementById('articleMeta').innerHTML=`<span class="article-tag" style="background:${c.bg};color:${c.tx}">${art.category}</span><span>⏱ ${art.readtime||5} min read</span><span>📅 ${art.date||''}</span>`;
+    document.getElementById('articleBody').innerHTML=art.content||'<p>Content coming soon.</p>';
+    // Related articles
+    const related=(d.articles||[]).filter(a=>a.id!==id&&a.status==='published').slice(0,5);
+    document.getElementById('relatedLinks').innerHTML=related.map(a=>`<a class="related-link" href="article.html?id=${a.id}">${a.title}</a>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">More articles coming soon.</p>';
+  }catch(e){document.getElementById('articleBody').innerHTML='<p style="color:var(--muted)">Could not load article. Please try again.</p>';}
+}
+load();
+</script>
+</body>
+</html>

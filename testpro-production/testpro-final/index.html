@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TestPro India — Software Testing & QA Careers</title>
+<meta name="description" content="India's #1 resource for QA engineers. ISTQB prep, Selenium tutorials, interview questions, and career guidance for software testers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e1117;
+    --ink2: #2a2f3d;
+    --muted: #6b7280;
+    --accent: #00c896;
+    --accent2: #0066ff;
+    --warn: #ff6b35;
+    --surface: #f7f8fc;
+    --card: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: #fff;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 64px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow .3s;
+  }
+  nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo span {
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--ink2);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--ink);
+    color: #fff !important;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 500 !important;
+    transition: background .2s, transform .15s !important;
+  }
+  .nav-cta:hover { background: var(--accent) !important; color: #fff !important; transform: translateY(-1px); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--ink); border-radius: 2px; transition: .3s; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 100px 5vw 60px;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,150,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,150,.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-blob {
+    position: absolute; top: -100px; right: -100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,200,150,.12) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  .hero-blob2 {
+    position: absolute; bottom: -80px; left: 10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,102,255,.07) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 8s ease-in-out infinite 2s;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+  .hero-inner {
+    position: relative; z-index: 1;
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,200,150,.1);
+    border: 1px solid rgba(0,200,150,.3);
+    color: #008060;
+    font-size: .8rem; font-weight: 600;
+    padding: 5px 14px; border-radius: 100px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease .1s both;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--muted); font-weight: 300;
+    max-width: 480px; margin-bottom: 2rem; line-height: 1.7;
+    animation: fadeUp .6s ease .2s both;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp .6s ease .3s both;
+  }
+  .btn-primary {
+    background: var(--ink); color: #fff;
+    padding: 14px 28px; border-radius: 8px;
+    font-weight: 500; font-size: .95rem;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: background .2s, transform .15s, box-shadow .2s;
+  }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,200,150,.3); }
+  .btn-secondary {
+    border: 1.5px solid var(--border); color: var(--ink);
+    padding: 14px 28px; border-radius: 8px;
+    font-weight: 500; font-size: .95rem;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: border-color .2s, transform .15s;
+  }
+  .btn-secondary:hover { border-color: var(--ink); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 2rem; margin-top: 2.5rem;
+    animation: fadeUp .6s ease .4s both;
+  }
+  .stat { border-left: 3px solid var(--accent); padding-left: 1rem; }
+  .stat-num { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; }
+  .stat-label { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+
+  /* Hero right — terminal card */
+  .hero-card {
+    background: var(--ink);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,.2);
+    animation: fadeUp .6s ease .2s both;
+  }
+  .card-topbar {
+    background: #1e2433;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .card-topbar-title { margin-left: auto; margin-right: auto; font-size: .75rem; color: rgba(255,255,255,.4); font-family: monospace; }
+  .card-body { padding: 1.5rem; }
+  .code-line { font-family: 'Courier New', monospace; font-size: .82rem; margin-bottom: .5rem; }
+  .code-line .prompt { color: var(--accent); }
+  .code-line .cmd { color: #e2e8f0; }
+  .code-line .comment { color: rgba(255,255,255,.35); }
+  .code-line .string { color: #fbbf24; }
+  .code-line .kw { color: #a78bfa; }
+  .card-topics {
+    margin-top: 1.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .topic-chip {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 6px; padding: 8px 12px;
+    font-size: .78rem; color: rgba(255,255,255,.7);
+    display: flex; align-items: center; gap: 6px;
+    transition: background .2s, border-color .2s;
+    cursor: default;
+  }
+  .topic-chip:hover { background: rgba(0,200,150,.15); border-color: rgba(0,200,150,.4); color: #fff; }
+  .topic-chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  @keyframes fadeUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform:none; } }
+
+  /* ─── SECTION BASE ─── */
+  section { padding: 80px 5vw; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+  .section-tag {
+    font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: .75rem;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800; letter-spacing: -.02em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .section-sub { font-size: 1rem; color: var(--muted); max-width: 540px; margin-bottom: 3rem; }
+
+  /* ─── TOPICS GRID ─── */
+  .topics-section { background: var(--surface); }
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .topic-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .topic-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.08); border-color: rgba(0,200,150,.4); }
+  .topic-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1rem;
+  }
+  .topic-card h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
+  .topic-card p { font-size: .875rem; color: var(--muted); line-height: 1.6; }
+  .topic-meta {
+    margin-top: 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: .78rem; color: var(--muted);
+  }
+  .topic-count {
+    background: var(--surface);
+    padding: 3px 10px; border-radius: 100px;
+    font-weight: 500;
+  }
+
+  /* ─── ARTICLES ─── */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+  .article-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column;
+    background: var(--card);
+  }
+  .article-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.08); }
+  .article-thumb {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    position: relative; overflow: hidden;
+  }
+  .article-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+  .article-tag {
+    font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 1rem;
+  }
+  .article-card h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin-bottom: .6rem; line-height: 1.3; }
+  .article-card p { font-size: .875rem; color: var(--muted); flex: 1; }
+  .article-footer {
+    margin-top: 1rem; padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: .78rem; color: var(--muted);
+  }
+  .read-time { display: flex; align-items: center; gap: 4px; }
+
+  /* ─── INTERVIEW PREP ─── */
+  .prep-section { background: var(--ink); color: #fff; }
+  .prep-section h2 { color: #fff; }
+  .prep-section .section-sub { color: rgba(255,255,255,.55); }
+  .prep-section .section-tag { color: var(--accent); }
+  .qa-list { display: flex; flex-direction: column; gap: 1rem; }
+  .qa-item {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .qa-item:hover { border-color: rgba(0,200,150,.5); }
+  .qa-question {
+    padding: 1.1rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    font-weight: 500; font-size: .95rem;
+    user-select: none;
+    gap: 1rem;
+  }
+  .qa-question span:first-child { color: var(--accent); font-family: monospace; font-size: .85rem; margin-right: .75rem; flex-shrink: 0; }
+  .qa-chevron { flex-shrink: 0; transition: transform .3s; color: rgba(255,255,255,.4); }
+  .qa-item.open .qa-chevron { transform: rotate(180deg); }
+  .qa-answer {
+    max-height: 0; overflow: hidden;
+    transition: max-height .35s ease, padding .35s ease;
+    padding: 0 1.5rem;
+    font-size: .9rem; color: rgba(255,255,255,.65); line-height: 1.7;
+  }
+  .qa-item.open .qa-answer { max-height: 300px; padding: 0 1.5rem 1.25rem; }
+
+  /* ─── TOOLS ─── */
+  .tools-section { background: var(--surface); }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  .tool-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+    cursor: pointer;
+  }
+  .tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.08); border-color: rgba(0,102,255,.3); }
+  .tool-icon { font-size: 2rem; margin-bottom: .75rem; }
+  .tool-name { font-family: var(--font-display); font-size: .9rem; font-weight: 700; }
+  .tool-type { font-size: .75rem; color: var(--muted); margin-top: 3px; }
+  .tool-level {
+    margin-top: .75rem;
+    height: 4px; border-radius: 2px; background: var(--surface); overflow: hidden;
+  }
+  .tool-level-fill { height: 100%; border-radius: 2px; background: var(--accent2); }
+
+  /* ─── NEWSLETTER ─── */
+  .newsletter-section {
+    background: linear-gradient(135deg, #0e1117 0%, #1a2236 100%);
+    color: #fff; text-align: center; position: relative; overflow: hidden;
+  }
+  .newsletter-section::before {
+    content: '';
+    position: absolute; top: -50%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,200,150,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .newsletter-section h2 { color: #fff; position: relative; }
+  .newsletter-section .section-sub { color: rgba(255,255,255,.6); margin-left: auto; margin-right: auto; text-align: center; position: relative; }
+  .email-form {
+    display: flex; gap: 1rem; max-width: 480px; margin: 0 auto;
+    position: relative;
+  }
+  .email-form input {
+    flex: 1; padding: 14px 18px;
+    border: 1.5px solid rgba(255,255,255,.15);
+    border-radius: 8px; font-family: var(--font-body); font-size: .95rem;
+    background: rgba(255,255,255,.08); color: #fff;
+    outline: none; transition: border-color .2s;
+  }
+  .email-form input::placeholder { color: rgba(255,255,255,.35); }
+  .email-form input:focus { border-color: var(--accent); }
+  .email-form button {
+    background: var(--accent); color: #fff;
+    border: none; padding: 14px 24px; border-radius: 8px;
+    font-family: var(--font-body); font-size: .95rem; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+    transition: background .2s, transform .15s;
+  }
+  .email-form button:hover { background: #00a878; transform: translateY(-1px); }
+  .form-note { font-size: .78rem; color: rgba(255,255,255,.35); margin-top: 1rem; position: relative; }
+
+  /* ─── COURSES ─── */
+  .courses-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
+  }
+  .course-card {
+    border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem;
+    background: var(--card); position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .course-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.08); }
+  .course-badge {
+    position: absolute; top: 1.25rem; right: 1.25rem;
+    font-size: .72rem; font-weight: 700; padding: 4px 10px; border-radius: 100px;
+  }
+  .badge-free { background: rgba(0,200,150,.12); color: #008060; }
+  .badge-paid { background: rgba(255,107,53,.12); color: #c0440a; }
+  .course-card h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem; margin-top: .5rem; }
+  .course-card p { font-size: .875rem; color: var(--muted); margin-bottom: 1.25rem; }
+  .course-meta { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+  .meta-pill {
+    font-size: .75rem; background: var(--surface); padding: 3px 10px;
+    border-radius: 100px; color: var(--muted); font-weight: 500;
+  }
+  .course-btn {
+    display: block; text-align: center;
+    background: var(--ink); color: #fff;
+    padding: 10px; border-radius: 8px;
+    font-size: .875rem; font-weight: 500;
+    text-decoration: none; transition: background .2s;
+  }
+  .course-btn:hover { background: var(--accent); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,.6);
+    padding: 60px 5vw 30px;
+  }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+    padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .footer-brand .nav-logo { color: #fff; margin-bottom: 1rem; display: flex; }
+  .footer-brand p { font-size: .875rem; line-height: 1.7; max-width: 280px; }
+  .footer-col h4 { color: #fff; font-family: var(--font-display); font-weight: 700; font-size: .9rem; margin-bottom: 1rem; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+  .footer-col a { color: rgba(255,255,255,.5); text-decoration: none; font-size: .875rem; transition: color .2s; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 2rem; font-size: .8rem;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-bottom a { color: rgba(255,255,255,.4); text-decoration: none; }
+  .footer-bottom a:hover { color: var(--accent); }
+
+  /* ─── MOBILE NAV ─── */
+  .mobile-menu {
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: #fff; border-bottom: 1px solid var(--border);
+    padding: 1.5rem 5vw; z-index: 99;
+    display: none; flex-direction: column; gap: 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; padding: .5rem 0; border-bottom: 1px solid var(--border); }
+  .mobile-menu a:last-child { border: none; color: var(--accent); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-card { display: none; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .email-form { flex-direction: column; }
+    .hero-stats { gap: 1.5rem; }
+  }
+  @media (max-width: 480px) {
+    .footer-top { grid-template-columns: 1fr; }
+    .topics-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">TestPro <span>INDIA</span></a>
+  <ul class="nav-links">
+    <li><a href="#topics">Topics</a></li>
+    <li><a href="#articles">Articles</a></li>
+    <li><a href="#interview">Interview Prep</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#newsletter" class="nav-cta">Join Free</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#topics" onclick="closeMobile()">Topics</a>
+  <a href="#articles" onclick="closeMobile()">Articles</a>
+  <a href="#interview" onclick="closeMobile()">Interview Prep</a>
+  <a href="#tools" onclick="closeMobile()">Tools</a>
+  <a href="#courses" onclick="closeMobile()">Courses</a>
+  <a href="#newsletter" onclick="closeMobile()">Join Free Newsletter</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-blob"></div>
+    <div class="hero-blob2"></div>
+  </div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">India's #1 QA Career Resource</div>
+      <h1>Crack Any <em>Testing</em> Interview in India</h1>
+      <p class="hero-sub">From ISTQB certification to Selenium automation — everything a software tester needs to grow their career and triple their salary.</p>
+      <div class="hero-actions">
+        <a href="#interview" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L10.5 6H15L11 9.5L12.5 15L8 12L3.5 15L5 9.5L1 6H5.5L8 1Z" fill="currentColor"/></svg>
+          Start Interview Prep
+        </a>
+        <a href="#topics" class="btn-secondary">
+          Browse Topics →
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">50+</div>
+          <div class="stat-label">Articles published</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">Interview questions</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">Free</div>
+          <div class="stat-label">Always free to read</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="card-topbar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="card-topbar-title">testpro_guide.py</div>
+      </div>
+      <div class="card-body">
+        <div class="code-line"><span class="prompt">$</span> <span class="cmd"> career_path</span> <span class="comment">--target="senior-qa"</span></div>
+        <div class="code-line" style="margin-top:.75rem"><span class="kw">Topics</span> <span class="cmd">covered:</span></div>
+        <div class="card-topics">
+          <div class="topic-chip">ISTQB Foundation</div>
+          <div class="topic-chip">Selenium WebDriver</div>
+          <div class="topic-chip">API Testing</div>
+          <div class="topic-chip">Postman / REST</div>
+          <div class="topic-chip">JIRA & Azure DevOps</div>
+          <div class="topic-chip">Performance Testing</div>
+          <div class="topic-chip">Test Automation</div>
+          <div class="topic-chip">CI/CD for QA</div>
+        </div>
+        <div class="code-line" style="margin-top:1.25rem"><span class="comment"># Salary range for Senior QA (India, 2024)</span></div>
+        <div class="code-line"><span class="string">₹8L – ₹28L per annum</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOPICS -->
+<section class="topics-section" id="topics">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Explore</div>
+      <h2>Everything a QA Engineer Needs</h2>
+      <p class="section-sub">Structured learning paths for freshers to senior testers — covering tools, concepts, and career growth.</p>
+    </div>
+    <div class="topics-grid">
+
+      <a href="#" class="topic-card reveal">
+        <div class="topic-icon" style="background:rgba(0,200,150,.1);">📋</div>
+        <h3>ISTQB Certification</h3>
+        <p>Complete Foundation Level prep with mock tests, syllabus breakdown, and exam tips for Indian candidates.</p>
+        <div class="topic-meta">
+          <span class="topic-count">12 articles</span>
+          <span>Beginner</span>
+        </div>
+      </a>
+
+      <a href="#" class="topic-card reveal">
+        <div class="topic-icon" style="background:rgba(0,102,255,.1);">🤖</div>
+        <h3>Selenium Automation</h3>
+        <p>Java + Selenium from zero to hero. TestNG, Page Object Model, Maven, and real project setup.</p>
+        <div class="topic-meta">
+          <span class="topic-count">18 articles</span>
+          <span>Intermediate</span>
+        </div>
+      </a>
+
+      <a href="#" class="topic-card reveal">
+        <div class="topic-icon" style="background:rgba(255,107,53,.1);">🔗</div>
+        <h3>API Testing</h3>
+        <p>Postman collections, REST Assured automation, authentication flows, and response validation techniques.</p>
+        <div class="topic-meta">
+          <span class="topic-count">10 articles</span>
+          <span>Intermediate</span>
+        </div>
+      </a>
+
+      <a href="#" class="topic-card reveal">
+        <div class="topic-icon" style="background:rgba(139,92,246,.1);">📊</div>
+        <h3>Performance Testing</h3>
+        <p>JMeter from basics to load testing strategies. Understand TPS, response time, and bottleneck analysis.</p>
+        <div class="topic-meta">
+          <span class="topic-count">8 articles</span>
+          <span>Advanced</span>
+        </div>
+      </a>
+
+      <a href="#" class="topic-card reveal">
+        <div class="topic-icon" style="background:rgba(16,185,129,.1);">🎯</div>
+        <h3>Interview Preparation</h3>
+        <p>500+ real interview questions from TCS, Infosys, Wipro, Accenture, and top product companies in India.</p>
+        <div class="topic-meta">
+          <span class="topic-count">25 articles</span>
+          <span>All levels</span>
+        </div>
+      </a>
+
+      <a href="#" class="topic-card reveal">
+        <div class="topic-icon" style="background:rgba(245,158,11,.1);">🚀</div>
+        <h3>Career Growth</h3>
+        <p>How to negotiate salary, switch from manual to automation, and move into SDET or QA Lead roles.</p>
+        <div class="topic-meta">
+          <span class="topic-count">9 articles</span>
+          <span>All levels</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section id="articles">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Latest</div>
+      <h2>Fresh From the Blog</h2>
+      <p class="section-sub">Practical, no-fluff articles written by working QA professionals in India.</p>
+    </div>
+    <div class="articles-grid">
+
+      <a href="#" class="article-card reveal">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd)">🧪</div>
+        <div class="article-body">
+          <span class="article-tag" style="background:rgba(0,102,255,.1);color:#185FA5">Selenium</span>
+          <h3>How to Set Up Selenium WebDriver with Java in 2024 (Step-by-Step)</h3>
+          <p>Complete beginner's guide including Maven, TestNG, and running your first test script on Chrome.</p>
+          <div class="article-footer">
+            <span class="read-time">⏱ 8 min read</span>
+            <span>Dec 2024</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card reveal">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">📋</div>
+        <div class="article-body">
+          <span class="article-tag" style="background:rgba(0,200,150,.1);color:#008060">ISTQB</span>
+          <h3>ISTQB Foundation Level: What to Expect and How to Pass It First Time</h3>
+          <p>Real exam breakdown, which chapters matter most, and how Indian candidates are failing on tricky questions.</p>
+          <div class="article-footer">
+            <span class="read-time">⏱ 12 min read</span>
+            <span>Nov 2024</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card reveal">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">💼</div>
+        <div class="article-body">
+          <span class="article-tag" style="background:rgba(245,158,11,.12);color:#854F0B">Career</span>
+          <h3>Manual to Automation Tester: Realistic 6-Month Roadmap for Indian IT Professionals</h3>
+          <p>Exactly which skills to learn, in what order, and how to land your first automation role without an SDET background.</p>
+          <div class="article-footer">
+            <span class="read-time">⏱ 15 min read</span>
+            <span>Nov 2024</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card reveal">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">🔗</div>
+        <div class="article-body">
+          <span class="article-tag" style="background:rgba(139,92,246,.12);color:#534AB7">API Testing</span>
+          <h3>Top 50 API Testing Interview Questions Asked at Infosys, Wipro & HCL in 2024</h3>
+          <p>Actual questions from candidates who recently appeared for QA interviews at top service companies.</p>
+          <div class="article-footer">
+            <span class="read-time">⏱ 18 min read</span>
+            <span>Oct 2024</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card reveal">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#ffe4e6,#fecdd3)">⚡</div>
+        <div class="article-body">
+          <span class="article-tag" style="background:rgba(244,63,94,.1);color:#A32D2D">Performance</span>
+          <h3>JMeter Tutorial for Beginners: Run Your First Load Test in Under 30 Minutes</h3>
+          <p>No-fluff setup guide. Record, parameterize, and analyze a basic load test result with JMeter.</p>
+          <div class="article-footer">
+            <span class="read-time">⏱ 10 min read</span>
+            <span>Oct 2024</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card reveal">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#f0fdf4,#bbf7d0)">💰</div>
+        <div class="article-body">
+          <span class="article-tag" style="background:rgba(0,200,150,.1);color:#008060">Salary</span>
+          <h3>QA Engineer Salary in India 2024: City-Wise Breakdown with Negotiation Scripts</h3>
+          <p>Data from 200+ QA professionals across Pune, Bangalore, Hyderabad, and Chennai — plus how to ask for more.</p>
+          <div class="article-footer">
+            <span class="read-time">⏱ 9 min read</span>
+            <span>Sep 2024</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- INTERVIEW PREP -->
+<section class="prep-section" id="interview">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Interview Prep</div>
+      <h2>Most-Asked QA Interview Questions</h2>
+      <p class="section-sub">Curated from real interviews at Infosys, TCS, Wipro, Accenture, and product startups across India.</p>
+    </div>
+    <div class="qa-list reveal">
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div><span>Q01</span>What is the difference between Verification and Validation in software testing?</div>
+          <svg class="qa-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="qa-answer">
+          <strong style="color:#fff">Verification</strong> checks whether we are building the product right — it's a static process involving reviews, walkthroughs, and inspections done without executing code. <strong style="color:#fff">Validation</strong> checks whether we are building the right product — it's a dynamic process where the actual software is executed and tested against requirements. Tip: remember "Verification = process, Validation = product" to recall easily in interviews.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div><span>Q02</span>Explain the Software Testing Life Cycle (STLC) with all phases.</div>
+          <svg class="qa-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="qa-answer">
+          STLC has 6 phases: (1) <strong style="color:#fff">Requirement Analysis</strong> — understand what to test; (2) <strong style="color:#fff">Test Planning</strong> — create test plan, estimate effort, assign roles; (3) <strong style="color:#fff">Test Case Design</strong> — write test cases and prepare test data; (4) <strong style="color:#fff">Test Environment Setup</strong> — prepare servers, browsers, devices; (5) <strong style="color:#fff">Test Execution</strong> — run tests, log defects; (6) <strong style="color:#fff">Test Closure</strong> — prepare metrics report, lessons learned. Entry and exit criteria are defined for each phase.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div><span>Q03</span>What is the Page Object Model (POM) in Selenium? Why is it used?</div>
+          <svg class="qa-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="qa-answer">
+          POM is a design pattern in Selenium where each web page has a corresponding Java class. The class holds the web elements (locators) and methods (actions) for that page. Benefits: (1) Reduces code duplication — locators defined once; (2) Easy maintenance — if a locator changes, update only one file; (3) Improves readability — test scripts are cleaner and business-focused. In interviews, always mention you've used POM with PageFactory for cleaner initialization.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div><span>Q04</span>How do you prioritize test cases when time is limited before a release?</div>
+          <svg class="qa-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="qa-answer">
+          I follow a risk-based approach: (1) Identify business-critical flows (login, payment, core feature); (2) Test areas that changed in this release (regression risk is highest here); (3) Prioritize tests that previously found high-severity bugs; (4) Cover smoke tests to ensure app stability before detailed testing. I also communicate with the product manager about which features are customer-facing for the upcoming release. This shows you think beyond just "running tests."
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question" onclick="toggleQA(this)">
+          <div><span>Q05</span>What is the difference between Smoke Testing, Sanity Testing, and Regression Testing?</div>
+          <svg class="qa-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="qa-answer">
+          <strong style="color:#fff">Smoke Testing</strong>: Shallow, wide — done after a new build to verify basic functionality works (will the app launch? can the user log in?). <strong style="color:#fff">Sanity Testing</strong>: Narrow, deep — done after a bug fix to verify that specific fix works without breaking nearby features. It's a subset of regression. <strong style="color:#fff">Regression Testing</strong>: Full re-run of existing test cases after any change to ensure nothing is broken. Smoke is done first; if it fails, the build is rejected without further testing.
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:2rem" class="reveal">
+      <a href="#" class="btn-primary" style="display:inline-flex">View All 500+ Questions →</a>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="tools-section" id="tools">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Tools & Skills</div>
+      <h2>Tools Every Indian QA Engineer Needs</h2>
+      <p class="section-sub">Master these tools to stay relevant and command a better salary in today's market.</p>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card reveal">
+        <div class="tool-icon">🔍</div>
+        <div class="tool-name">Selenium</div>
+        <div class="tool-type">Automation</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:95%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">🔥</div>
+        <div class="tool-name">Postman</div>
+        <div class="tool-type">API Testing</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:90%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">⚡</div>
+        <div class="tool-name">JMeter</div>
+        <div class="tool-type">Performance</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:75%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">🐛</div>
+        <div class="tool-name">JIRA</div>
+        <div class="tool-type">Bug Tracking</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:88%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">🤖</div>
+        <div class="tool-name">Cypress</div>
+        <div class="tool-type">E2E Testing</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:70%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">📱</div>
+        <div class="tool-name">Appium</div>
+        <div class="tool-type">Mobile Testing</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:65%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">🔧</div>
+        <div class="tool-name">TestNG</div>
+        <div class="tool-type">Test Framework</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:85%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">⚙️</div>
+        <div class="tool-name">Jenkins</div>
+        <div class="tool-type">CI/CD</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:72%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">🗄️</div>
+        <div class="tool-name">SQL</div>
+        <div class="tool-type">Database Testing</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:82%"></div></div>
+      </div>
+      <div class="tool-card reveal">
+        <div class="tool-icon">🐙</div>
+        <div class="tool-name">Git</div>
+        <div class="tool-type">Version Control</div>
+        <div class="tool-level"><div class="tool-level-fill" style="width:80%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COURSES -->
+<section id="courses">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Learning Paths</div>
+      <h2>Structured Courses for Every Level</h2>
+      <p class="section-sub">From fresher to senior QA — find the right learning path and advance your career faster.</p>
+    </div>
+    <div class="courses-grid">
+
+      <div class="course-card reveal">
+        <div class="course-badge badge-free">FREE</div>
+        <div style="font-size:2rem">🧪</div>
+        <h3>QA Fundamentals for Freshers</h3>
+        <p>Everything you need to land your first QA job — SDLC, STLC, bug life cycle, test case writing, and JIRA basics.</p>
+        <div class="course-meta">
+          <span class="meta-pill">12 lessons</span>
+          <span class="meta-pill">Beginner</span>
+          <span class="meta-pill">6 hrs</span>
+        </div>
+        <a href="#" class="course-btn">Start Learning →</a>
+      </div>
+
+      <div class="course-card reveal">
+        <div class="course-badge badge-free">FREE</div>
+        <div style="font-size:2rem">🤖</div>
+        <h3>Selenium with Java — Zero to Hero</h3>
+        <p>Complete automation testing course. Setup, locators, POM, TestNG, extent reports, and running tests in CI/CD.</p>
+        <div class="course-meta">
+          <span class="meta-pill">24 lessons</span>
+          <span class="meta-pill">Intermediate</span>
+          <span class="meta-pill">14 hrs</span>
+        </div>
+        <a href="#" class="course-btn">Start Learning →</a>
+      </div>
+
+      <div class="course-card reveal" style="border-color:rgba(255,107,53,.3)">
+        <div class="course-badge badge-paid">PREMIUM</div>
+        <div style="font-size:2rem">🎯</div>
+        <h3>QA Interview Mastery — Get Hired in 60 Days</h3>
+        <p>500 curated interview Q&As, mock interview sessions, resume templates, and salary negotiation scripts for the Indian market.</p>
+        <div class="course-meta">
+          <span class="meta-pill">30 lessons</span>
+          <span class="meta-pill">All levels</span>
+          <span class="meta-pill">Certificate</span>
+        </div>
+        <a href="#newsletter" class="course-btn" style="background:var(--warn)">Join Waitlist →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section" id="newsletter">
+  <div class="section-inner" style="text-align:center">
+    <div class="reveal">
+      <div class="section-tag">Community</div>
+      <h2>Join 5,000+ QA Engineers Getting Ahead</h2>
+      <p class="section-sub" style="margin-left:auto;margin-right:auto">Weekly emails with new interview questions, tool tutorials, salary insights, and job openings — straight to your inbox.</p>
+      <div class="email-form">
+        <input type="email" placeholder="your.name@company.com" id="emailInput">
+        <button onclick="handleSubscribe()">Subscribe Free</button>
+      </div>
+      <p class="form-note">No spam. Unsubscribe anytime. Read by testers at Infosys, TCS, Wipro &amp; more.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="margin-bottom:1rem;display:inline-flex;color:#fff">TestPro <span>INDIA</span></a>
+        <p>India's trusted resource for software testing professionals. Helping QA engineers learn, grow, and earn more since 2024.</p>
+        <p style="margin-top:1rem;font-size:.8rem">Based in Pune, Maharashtra 🇮🇳</p>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <ul>
+          <li><a href="#">ISTQB Guide</a></li>
+          <li><a href="#">Selenium Tutorial</a></li>
+          <li><a href="#">API Testing</a></li>
+          <li><a href="#">Performance Testing</a></li>
+          <li><a href="#">Mobile Testing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Career</h4>
+        <ul>
+          <li><a href="#">Interview Questions</a></li>
+          <li><a href="#">Resume Templates</a></li>
+          <li><a href="#">Salary Guide</a></li>
+          <li><a href="#">Job Board</a></li>
+          <li><a href="#">Mentorship</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Write for Us</a></li>
+          <li><a href="#">Advertise</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 TestPro India. Made with ❤️ in Pune.</span>
+      <div style="display:flex;gap:1.5rem">
+        <a href="#">LinkedIn</a>
+        <a href="#">YouTube</a>
+        <a href="#">Telegram</a>
+        <a href="#">Twitter/X</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Mobile menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+  function closeMobile() { mobileMenu.classList.remove('open'); }
+
+  // Accordion Q&A
+  function toggleQA(btn) {
+    const item = btn.closest('.qa-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.qa-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        // Stagger siblings
+        const siblings = [...e.target.parentElement.querySelectorAll('.reveal')];
+        const idx = siblings.indexOf(e.target);
+        setTimeout(() => e.target.classList.add('visible'), idx * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(r => observer.observe(r));
+
+  // Newsletter
+  function handleSubscribe() {
+    const input = document.getElementById('emailInput');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = '#ef4444';
+      setTimeout(() => input.style.borderColor = '', 2000);
+      return;
+    }
+    const btn = document.querySelector('.email-form button');
+    btn.textContent = 'You\'re in! 🎉';
+    btn.style.background = '#008060';
+    input.value = '';
+    input.disabled = true;
+    btn.disabled = true;
+  }
+
+  // Smooth nav link active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>

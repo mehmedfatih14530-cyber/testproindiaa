@@ -1,0 +1,83 @@
+{
+  "articles": [
+    {
+      "id": "selenium-java-setup-2024",
+      "title": "How to Set Up Selenium WebDriver with Java in 2025",
+      "category": "Selenium",
+      "slug": "selenium-java-setup-2024",
+      "readtime": "8",
+      "meta": "Complete beginner guide to Selenium WebDriver with Java, Maven and TestNG setup for Indian QA engineers in 2025.",
+      "status": "published",
+      "date": "15 Apr 2025",
+      "emoji": "🤖",
+      "color": "linear-gradient(135deg,#dbeafe,#bfdbfe)",
+      "tagColor": "rgba(0,102,255,.1)",
+      "tagText": "#185FA5",
+      "excerpt": "Complete beginner's guide including Maven, TestNG, and running your first test on Chrome.",
+      "content": "<h2>Getting Started with Selenium WebDriver</h2><p>Selenium WebDriver is the most popular automation testing tool in India's IT industry. Companies like TCS, Infosys, Wipro, and Cognizant all use it extensively.</p><h2>Prerequisites</h2><p>Before we begin, make sure you have the following installed:</p><ul><li>Java JDK 11 or higher</li><li>IntelliJ IDEA or Eclipse</li><li>Maven</li><li>Chrome Browser</li></ul><h2>Step 1: Create a Maven Project</h2><p>Open IntelliJ IDEA and create a new Maven project. This will set up the basic structure for your Selenium project.</p><h2>Step 2: Add Dependencies</h2><p>Add the Selenium Java and TestNG dependencies to your pom.xml file.</p><pre><code>&lt;dependency&gt;\n  &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;\n  &lt;artifactId&gt;selenium-java&lt;/artifactId&gt;\n  &lt;version&gt;4.18.1&lt;/version&gt;\n&lt;/dependency&gt;</code></pre><h2>Step 3: Write Your First Test</h2><p>Create a new Java class and write your first Selenium test to open a browser and navigate to a website.</p><h2>Conclusion</h2><p>You now have a working Selenium WebDriver setup with Java. Practice writing more tests and explore different WebDriver commands to become proficient.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the difference between Smoke Testing and Sanity Testing?",
+      "category": "General",
+      "difficulty": "Beginner",
+      "answer": "Smoke Testing is a preliminary test to check whether the basic functionalities of the build are working correctly. It is done on the entire application and covers all major functions. Sanity Testing, on the other hand, is a narrow regression test that focuses on one or a few areas of functionality. Smoke testing is done after a new build is received, while sanity testing is done after minor changes or bug fixes. Think of smoke testing as checking if the car starts, and sanity testing as checking if a specific repair was done correctly.",
+      "tip": "Use the analogy: Smoke = broad check, Sanity = focused check. Interviewers at TCS and Infosys love this analogy.",
+      "date": "15 Apr 2025"
+    },
+    {
+      "id": "q2",
+      "question": "What is the difference between Verification and Validation in software testing?",
+      "category": "General",
+      "difficulty": "Beginner",
+      "answer": "Verification is the process of evaluating whether the product is being built correctly according to the specifications (Are we building the product right?). It involves reviews, inspections, and walkthroughs. Validation is the process of evaluating whether the correct product has been built and meets the customer's actual needs (Are we building the right product?). Validation involves actual testing of the software.",
+      "tip": "Remember: Verification = process-oriented, Validation = product-oriented. V&V is a common ISTQB exam topic.",
+      "date": "15 Apr 2025"
+    },
+    {
+      "id": "q3",
+      "question": "Explain the Page Object Model (POM) design pattern in Selenium.",
+      "category": "Selenium",
+      "difficulty": "Intermediate",
+      "answer": "Page Object Model is a design pattern in Selenium where each web page of the application has a corresponding Java class. This class contains the web elements of that page and the methods to interact with those elements. POM improves code maintainability because if a UI element changes, you only need to update the code in one place (the page class) rather than across all test scripts. It also improves readability and reduces code duplication.",
+      "tip": "Always mention that POM separates test logic from page interaction logic. This is heavily asked at Wipro and HCL interviews.",
+      "date": "15 Apr 2025"
+    }
+  ],
+  "courses": [
+    {
+      "id": "course1",
+      "title": "QA Fundamentals for Freshers",
+      "desc": "Everything you need to land your first QA job — SDLC, STLC, bug life cycle, test case writing, and JIRA basics. No prior experience needed.",
+      "type": "free",
+      "price": "",
+      "lessons": "12",
+      "duration": "6 hours",
+      "level": "Beginner",
+      "icon": "🧪",
+      "status": "published"
+    },
+    {
+      "id": "course2",
+      "title": "Selenium WebDriver with Java",
+      "desc": "From zero to writing real automation test suites. Includes Maven, TestNG, Page Object Model, and CI/CD basics.",
+      "type": "paid",
+      "price": "2999",
+      "lessons": "28",
+      "duration": "18 hours",
+      "level": "Intermediate",
+      "icon": "🤖",
+      "status": "published"
+    }
+  ],
+  "settings": {
+    "siteName": "TestPro India",
+    "domain": "testproindia.com",
+    "adsenseId": "",
+    "showAds": true,
+    "indiaFocus": true
+  },
+  "lastUpdated": "2025-04-15T00:00:00.000Z"
+}

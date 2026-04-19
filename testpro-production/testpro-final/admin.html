@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TestPro India — AI Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e1117; --ink2: #2a2f3d; --muted: #6b7280;
+    --accent: #00c896; --accent2: #0066ff; --warn: #ff6b35; --danger: #ef4444;
+    --surface: #f7f8fc; --card: #ffffff; --border: rgba(0,0,0,0.08);
+    --sidebar: #0e1117; --sidebar-w: 248px;
+    --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+    --ai-purple: #7c3aed; --ai-pink: #ec4899;
+    --ai-grad: linear-gradient(135deg, #7c3aed, #0066ff, #00c896);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--surface); color: var(--ink); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w); background: var(--sidebar); color: #fff;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
+    transition: transform .3s;
+  }
+  .sidebar-logo {
+    padding: 1.4rem 1.25rem 1rem;
+    font-family: var(--font-display); font-size: 1.05rem; font-weight: 800;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar-logo .badge { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 4px; font-size:.68rem; font-weight:700; letter-spacing:.05em; }
+  .sidebar-label { font-size: .66rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.25); padding: .8rem 1.25rem .35rem; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: .65rem 1.25rem; font-size: .85rem; color: rgba(255,255,255,.55);
+    cursor: pointer; transition: background .15s, color .15s;
+    border: none; background: none; width: 100%; text-align: left; border-radius: 0;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+  .nav-item.active { background: rgba(0,200,150,.15); color: var(--accent); }
+  .nav-item .ico { width: 20px; text-align: center; font-size: .95rem; flex-shrink: 0; }
+  .ai-nav {
+    margin: .5rem 1rem; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(124,58,237,.3), rgba(0,102,255,.2));
+    border: 1px solid rgba(124,58,237,.3);
+    color: #c4b5fd !important;
+    padding: .7rem 1rem !important;
+  }
+  .ai-nav.active, .ai-nav:hover { background: linear-gradient(135deg, rgba(124,58,237,.5), rgba(0,102,255,.35)) !important; color: #fff !important; }
+  .ai-nav .ai-dot { width: 7px; height: 7px; background: var(--ai-purple); border-radius: 50%; animation: pulse-dot 2s infinite; flex-shrink: 0; }
+  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+  .sidebar-bottom { margin-top: auto; padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,.08); }
+  .view-site-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.07); color: rgba(255,255,255,.6);
+    padding: 9px 14px; border-radius: 8px; font-size: .8rem; font-weight: 500;
+    text-decoration: none; transition: background .2s;
+  }
+  .view-site-btn:hover { background: rgba(0,200,150,.2); color: var(--accent); }
+
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 0 2rem; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .topbar-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+  .topbar-right { display: flex; align-items: center; gap: 1rem; }
+  .api-status { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--muted); }
+  .api-dot { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; }
+  .api-dot.connected { background: var(--accent); animation: pulse-dot 2s infinite; }
+  .content { padding: 2rem; flex: 1; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── CARDS / STATS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .stat-label { font-size: .75rem; color: var(--muted); font-weight: 500; margin-bottom: .5rem; }
+  .stat-value { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; }
+  .stat-change { font-size: .75rem; margin-top: .25rem; }
+  .up { color: var(--accent); } .warn-text { color: var(--warn); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+  .card-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-header h3 { font-family: var(--font-display); font-size: .95rem; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: .75rem 1.5rem; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border); }
+  td { padding: .9rem 1.5rem; font-size: .875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,200,150,.02); }
+
+  .status { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: .72rem; font-weight: 600; }
+  .status::before { content:''; width:5px; height:5px; border-radius:50%; }
+  .status-published { background: rgba(0,200,150,.1); color: #008060; }
+  .status-published::before { background: var(--accent); }
+  .status-draft { background: rgba(107,114,128,.1); color: var(--muted); }
+  .status-draft::before { background: var(--muted); }
+  .tag-pill { display: inline-block; background: var(--surface); border: 1px solid var(--border); padding: 2px 10px; border-radius: 100px; font-size: .72rem; color: var(--muted); }
+
+  /* ── BUTTONS ── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-family: var(--font-body); font-size: .85rem; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-success { background: var(--accent); color: #fff; }
+  .btn-success:hover { background: #00a878; }
+  .btn-danger { background: rgba(239,68,68,.1); color: var(--danger); border: 1px solid rgba(239,68,68,.2); }
+  .btn-danger:hover { background: var(--danger); color: #fff; }
+  .btn-ghost { background: var(--surface); color: var(--ink2); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--ink); }
+  .btn-sm { padding: 5px 10px; font-size: .78rem; border-radius: 6px; }
+  .btn-ai {
+    background: linear-gradient(135deg, #7c3aed, #0066ff);
+    color: #fff; position: relative; overflow: hidden;
+  }
+  .btn-ai:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,.4); }
+  .btn-ai::after { content:'✨'; margin-left: 2px; }
+  .btn-ai-sm { background: linear-gradient(135deg, #7c3aed, #0066ff); color: #fff; padding: 5px 12px; font-size: .78rem; border-radius: 6px; border: none; cursor: pointer; font-family: var(--font-body); font-weight: 500; transition: all .15s; }
+  .btn-ai-sm:hover { opacity: .85; transform: translateY(-1px); }
+
+  /* ── FORMS ── */
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: .8rem; font-weight: 600; color: var(--ink2); margin-bottom: .4rem; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-family: var(--font-body); font-size: .9rem;
+    background: #fff; color: var(--ink); outline: none; transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { min-height: 180px; resize: vertical; line-height: 1.6; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-actions { display: flex; gap: .75rem; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 1.5rem; flex-wrap: wrap; }
+
+  /* ── EDITOR ── */
+  .editor-toolbar { display: flex; gap: 4px; flex-wrap: wrap; padding: .6rem .75rem; background: var(--surface); border: 1.5px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; }
+  .toolbar-btn { padding: 4px 10px; border-radius: 5px; border: none; background: none; font-size: .8rem; font-weight: 600; cursor: pointer; color: var(--ink2); transition: background .15s; }
+  .toolbar-btn:hover { background: rgba(0,0,0,.08); }
+  .toolbar-sep { width: 1px; background: var(--border); margin: 4px 4px; }
+  .editor-area { border: 1.5px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 1rem; min-height: 260px; outline: none; font-family: var(--font-body); font-size: .9rem; line-height: 1.7; background: #fff; }
+  .editor-area:focus { border-color: var(--accent); }
+  .editor-area:empty::before { content: attr(data-placeholder); color: var(--muted); pointer-events: none; }
+
+  /* ── MODAL ── */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--card); border-radius: 16px; padding: 2rem; width: 95%; max-width: 720px; max-height: 92vh; overflow-y: auto; position: relative; animation: modalIn .25s ease; }
+  .modal-sm { max-width: 560px; }
+  @keyframes modalIn { from { opacity:0; transform: scale(.97) translateY(8px); } to { opacity:1; transform: none; } }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--surface); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: var(--border); }
+  .modal h2 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+  /* ── TOAST ── */
+  .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 300; display: flex; flex-direction: column; gap: .5rem; }
+  .toast { background: var(--ink); color: #fff; padding: .75rem 1.25rem; border-radius: 8px; font-size: .875rem; display: flex; align-items: center; gap: 8px; animation: slideIn .3s ease; min-width: 220px; box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+  .toast.success { background: #008060; }
+  .toast.error { background: var(--danger); }
+  .toast.ai { background: linear-gradient(135deg, #7c3aed, #0066ff); }
+  @keyframes slideIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform:none; } }
+
+  /* ── AI PANEL ── */
+  .ai-panel-hero {
+    background: linear-gradient(135deg, #0e1117 0%, #1a1040 50%, #0d1f3c 100%);
+    border-radius: 16px; padding: 2.5rem; margin-bottom: 1.5rem;
+    position: relative; overflow: hidden; color: #fff;
+  }
+  .ai-panel-hero::before {
+    content: ''; position: absolute; top: -50%; right: -10%; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(124,58,237,.3) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .ai-panel-hero::after {
+    content: ''; position: absolute; bottom: -60%; left: 20%; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,200,150,.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .ai-hero-inner { position: relative; z-index: 1; }
+  .ai-hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,58,237,.3); border: 1px solid rgba(124,58,237,.5); color: #c4b5fd; padding: 5px 14px; border-radius: 100px; font-size: .78rem; font-weight: 600; margin-bottom: 1rem; }
+  .ai-hero-title { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; margin-bottom: .75rem; }
+  .ai-hero-desc { color: rgba(255,255,255,.65); font-size: .9rem; max-width: 520px; line-height: 1.6; }
+  .ai-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .ai-tool-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;
+    cursor: pointer; transition: all .2s; display: flex; flex-direction: column; gap: 1rem;
+    text-align: left;
+  }
+  .ai-tool-card:hover { border-color: rgba(124,58,237,.4); box-shadow: 0 8px 30px rgba(124,58,237,.1); transform: translateY(-2px); }
+  .ai-tool-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+  .ai-tool-icon.purple { background: rgba(124,58,237,.1); }
+  .ai-tool-icon.blue { background: rgba(0,102,255,.1); }
+  .ai-tool-icon.green { background: rgba(0,200,150,.1); }
+  .ai-tool-icon.orange { background: rgba(255,107,53,.1); }
+  .ai-tool-icon.pink { background: rgba(236,72,153,.1); }
+  .ai-tool-title { font-family: var(--font-display); font-size: .95rem; font-weight: 700; }
+  .ai-tool-desc { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+  .ai-tool-count { font-size: .72rem; font-weight: 600; color: var(--accent); }
+
+  /* ── AI GENERATOR UI ── */
+  .ai-gen-panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1.5rem; overflow: hidden; }
+  .ai-gen-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); background: linear-gradient(135deg, rgba(124,58,237,.05), rgba(0,102,255,.03)); display: flex; align-items: center; justify-content: space-between; }
+  .ai-gen-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .ai-gen-body { padding: 1.5rem; }
+  .ai-input-row { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: end; margin-bottom: 1.25rem; }
+  .ai-prompt-input { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: var(--font-body); font-size: .9rem; width: 100%; outline: none; transition: border-color .2s; }
+  .ai-prompt-input:focus { border-color: #7c3aed; }
+  .ai-options { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center; }
+  .ai-options select { padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: var(--font-body); font-size: .82rem; outline: none; background: #fff; cursor: pointer; }
+  .ai-options select:focus { border-color: #7c3aed; }
+  .ai-output {
+    background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 1.25rem; min-height: 120px; font-size: .875rem; line-height: 1.7;
+    color: var(--ink2); position: relative; display: none;
+  }
+  .ai-output.visible { display: block; }
+  .ai-loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .875rem; }
+  .ai-spinner { width: 18px; height: 18px; border: 2px solid rgba(124,58,237,.2); border-top-color: #7c3aed; border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-output-actions { display: flex; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
+  .ai-tag { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 100px; font-size: .7rem; font-weight: 600; background: rgba(124,58,237,.1); color: #7c3aed; }
+
+  /* ── BATCH GEN ── */
+  .batch-row { display: flex; align-items: center; gap: .75rem; padding: .75rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: .5rem; background: #fff; }
+  .batch-row .batch-title { flex: 1; font-size: .85rem; font-weight: 500; }
+  .batch-status { font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 100px; }
+  .batch-status.pending { background: rgba(107,114,128,.1); color: var(--muted); }
+  .batch-status.generating { background: rgba(124,58,237,.1); color: #7c3aed; animation: pulse-dot 1.5s infinite; }
+  .batch-status.done { background: rgba(0,200,150,.1); color: #008060; }
+  .batch-status.error { background: rgba(239,68,68,.1); color: var(--danger); }
+
+  /* ── SETTINGS ── */
+  .settings-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .settings-section h3 { font-family: var(--font-display); font-size: .95rem; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: .75rem; border-bottom: 1px solid var(--border); }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; border-bottom: 1px solid var(--border); }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: .875rem; font-weight: 500; }
+  .toggle-desc { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+  .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 22px; cursor: pointer; transition: .2s; }
+  .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+  .toggle input:checked + .toggle-slider { background: var(--accent); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+  /* ── UPLOAD ── */
+  .upload-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 2rem; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(0,200,150,.04); }
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .media-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .media-thumb { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; background: var(--surface); }
+  .media-info { padding: .6rem .75rem; }
+  .media-name { font-size: .75rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .media-size { font-size: .7rem; color: var(--muted); }
+
+  /* ── EMPTY ── */
+  .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--muted); }
+  .empty-state .ico { font-size: 2.5rem; margin-bottom: 1rem; opacity: .5; }
+  .empty-state h4 { font-size: .95rem; font-weight: 600; margin-bottom: .4rem; color: var(--ink2); }
+  .empty-state p { font-size: .82rem; }
+
+  /* ── HOSTING GUIDE ── */
+  .host-step { display: flex; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 10px; background: #fff; margin-bottom: .75rem; }
+  .host-step-num { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #0066ff); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; }
+  .host-step-title { font-weight: 600; font-size: .875rem; margin-bottom: .3rem; }
+  .host-step-desc { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+  .host-step code { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: .8rem; color: var(--ai-purple); }
+  .provider-card { border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; background: #fff; display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+  .provider-name { font-weight: 600; font-size: .875rem; }
+  .provider-desc { font-size: .78rem; color: var(--muted); }
+  .provider-tag { font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; }
+  .tag-free { background: rgba(0,200,150,.1); color: #008060; }
+  .tag-recommended { background: rgba(124,58,237,.1); color: #7c3aed; }
+  .tag-paid { background: rgba(107,114,128,.1); color: var(--muted); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 10px; }
+
+  /* ── STREAMED TEXT ── */
+  .stream-cursor::after { content: '▋'; animation: blink-cur .7s infinite; color: #7c3aed; }
+  @keyframes blink-cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── API KEY INPUT ── */
+  .api-key-row { display: flex; gap: .75rem; align-items: center; }
+  .api-key-row input { flex: 1; }
+  .key-saved { font-size: .75rem; color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    TestPro <span class="badge">INDIA</span>
+  </div>
+  <div class="sidebar-label">Main</div>
+  <button class="nav-item active" onclick="showPanel('dashboard')"><span class="ico">📊</span> Dashboard</button>
+  <button class="nav-item" onclick="showPanel('articles')"><span class="ico">📝</span> Articles</button>
+  <button class="nav-item" onclick="showPanel('questions')"><span class="ico">❓</span> Interview Q&A</button>
+  <button class="nav-item" onclick="showPanel('courses')"><span class="ico">🎓</span> Courses</button>
+  <div class="sidebar-label">AI Tools</div>
+  <button class="nav-item ai-nav" onclick="showPanel('ai')"><span class="ai-dot"></span> ✨ AI Content Studio</button>
+  <button class="nav-item ai-nav" onclick="showPanel('batch')"><span class="ai-dot"></span> 🚀 Batch Generator</button>
+  <div class="sidebar-label">Site</div>
+  <button class="nav-item" onclick="showPanel('media')"><span class="ico">🖼️</span> Media</button>
+  <button class="nav-item" onclick="showPanel('hosting')"><span class="ico">🌐</span> Hosting Guide</button>
+  <button class="nav-item" onclick="showPanel('settings')"><span class="ico">⚙️</span> Settings</button>
+  <div class="sidebar-bottom">
+    <a href="index.html" class="view-site-btn" target="_blank">↗ View Site</a>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="panelTitle">Dashboard</div>
+    <div class="topbar-right">
+      <div class="api-status">
+        <div class="api-dot" id="apiDot"></div>
+        <span id="apiStatusText">AI not configured</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showPanel('settings')">⚙ API Key</button>
+      <button class="btn btn-ai btn-sm" onclick="showPanel('ai')">AI Studio</button>
+      <button class="btn btn-success btn-sm" id="publishBtn" onclick="publishToGitHub()" title="Configure GitHub in Settings first" style="opacity:.5">🚀 Publish Live</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Articles</div><div class="stat-value" id="stat-arts">0</div><div class="stat-change up">↑ AI-generated</div></div>
+        <div class="stat-card"><div class="stat-label">Interview Q&As</div><div class="stat-value" id="stat-qs">0</div><div class="stat-change up">↑ with AI answers</div></div>
+        <div class="stat-card"><div class="stat-label">Courses</div><div class="stat-value" id="stat-courses">0</div><div class="stat-change">testproindia.com</div></div>
+        <div class="stat-card"><div class="stat-label">Drafts Pending</div><div class="stat-value warn-text" id="stat-drafts">0</div><div class="stat-change warn-text">Need review</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>🚀 Quick AI Actions</h3></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1.5rem">
+          <button onclick="quickGenArticle()" style="background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(0,102,255,.05));border:1px solid rgba(124,58,237,.2);border-radius:12px;padding:1.25rem;cursor:pointer;text-align:left;transition:all .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+            <div style="font-size:1.5rem;margin-bottom:.5rem">📝</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:.9rem;margin-bottom:.3rem">Generate Article</div>
+            <div style="font-size:.78rem;color:var(--muted)">Full article with AI in seconds</div>
+          </button>
+          <button onclick="quickGenQuestion()" style="background:linear-gradient(135deg,rgba(0,102,255,.08),rgba(0,200,150,.05));border:1px solid rgba(0,102,255,.2);border-radius:12px;padding:1.25rem;cursor:pointer;text-align:left;transition:all .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+            <div style="font-size:1.5rem;margin-bottom:.5rem">❓</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:.9rem;margin-bottom:.3rem">Generate Q&A</div>
+            <div style="font-size:.78rem;color:var(--muted)">Interview question + expert answer</div>
+          </button>
+          <button onclick="showPanel('batch')" style="background:linear-gradient(135deg,rgba(0,200,150,.08),rgba(255,107,53,.05));border:1px solid rgba(0,200,150,.2);border-radius:12px;padding:1.25rem;cursor:pointer;text-align:left;transition:all .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+            <div style="font-size:1.5rem;margin-bottom:.5rem">🚀</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:.9rem;margin-bottom:.3rem">Batch Generate</div>
+            <div style="font-size:.78rem;color:var(--muted)">Create 5-10 articles at once</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>📋 Recent Content</h3></div>
+        <div id="dash-recent">
+          <div class="empty-state"><div class="ico">📭</div><h4>No content yet</h4><p>Use the AI Studio to generate your first article or Q&A</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ARTICLES ── -->
+    <div class="panel" id="panel-articles">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">Articles</h2>
+          <p style="font-size:.82rem;color:var(--muted);margin-top:2px">Manage all articles for testproindia.com</p>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <input type="search" placeholder="Search articles…" oninput="renderArticles(this.value)" style="padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:.85rem;outline:none;width:200px">
+          <button class="btn btn-ai" onclick="showPanel('ai')">✨ AI Generate</button>
+          <button class="btn btn-primary" onclick="openArticleModal()">+ New Article</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="articles-empty" class="empty-state"><div class="ico">📝</div><h4>No articles yet</h4><p>Click "AI Generate" to create your first article automatically</p></div>
+        <div id="articles-table" style="display:none">
+          <table><thead><tr><th>Title</th><th>Category</th><th>Read Time</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="articles-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── QUESTIONS ── -->
+    <div class="panel" id="panel-questions">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">Interview Q&A Bank</h2>
+          <p style="font-size:.82rem;color:var(--muted);margin-top:2px">Questions & expert answers for your interview prep pages</p>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-ai" onclick="showPanel('ai')">✨ AI Generate</button>
+          <button class="btn btn-primary" onclick="openQuestionModal()">+ Add Question</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="questions-empty" class="empty-state"><div class="ico">❓</div><h4>No questions yet</h4><p>Generate interview Q&As with AI or add them manually</p></div>
+        <div id="questions-table" style="display:none">
+          <table><thead><tr><th>Question</th><th>Category</th><th>Difficulty</th><th>Actions</th></tr></thead>
+          <tbody id="questions-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COURSES ── -->
+    <div class="panel" id="panel-courses">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">Courses</h2>
+          <p style="font-size:.82rem;color:var(--muted);margin-top:2px">Free & premium courses for QA engineers</p>
+        </div>
+        <div style="display:flex;gap:.6rem">
+          <button class="btn btn-ai" onclick="aiGenerateCourse()">✨ AI Generate Course</button>
+          <button class="btn btn-primary" onclick="openCourseModal()">+ New Course</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="courses-empty" class="empty-state"><div class="ico">🎓</div><h4>No courses yet</h4><p>Create free or paid courses for your students</p></div>
+        <div id="courses-table" style="display:none">
+          <table><thead><tr><th>Course</th><th>Type</th><th>Lessons</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="courses-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AI CONTENT STUDIO ── -->
+    <div class="panel" id="panel-ai">
+      <div class="ai-panel-hero">
+        <div class="ai-hero-inner">
+          <div class="ai-hero-badge">✨ Powered by Claude AI</div>
+          <div class="ai-hero-title">AI Content Studio</div>
+          <div class="ai-hero-desc">Generate professional QA articles, interview Q&As, course outlines, and SEO content for testproindia.com — fully automated, tailored for the Indian IT market.</div>
+        </div>
+      </div>
+
+      <!-- Article Generator -->
+      <div class="ai-gen-panel">
+        <div class="ai-gen-header">
+          <div class="ai-gen-title">📝 Article Generator</div>
+          <span class="ai-tag">✨ AI</span>
+        </div>
+        <div class="ai-gen-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Topic / Title Idea</label>
+              <input type="text" class="ai-prompt-input" id="art-topic" placeholder="e.g. Top 30 Selenium Interview Questions for 2025">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="art-gen-category">
+                <option value="Selenium">Selenium</option>
+                <option value="ISTQB">ISTQB</option>
+                <option value="Career">Career</option>
+                <option value="API Testing">API Testing</option>
+                <option value="Performance">Performance</option>
+                <option value="General">General QA</option>
+              </select>
+            </div>
+          </div>
+          <div class="ai-options">
+            <select id="art-gen-length">
+              <option value="short">Short (800 words)</option>
+              <option value="medium" selected>Medium (1500 words)</option>
+              <option value="long">Long (2500 words)</option>
+            </select>
+            <select id="art-gen-tone">
+              <option value="practical">Practical & Direct</option>
+              <option value="beginner">Beginner-Friendly</option>
+              <option value="expert">Expert / Senior Level</option>
+            </select>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--ink2);cursor:pointer">
+              <input type="checkbox" id="art-gen-seo" checked> Include SEO metadata
+            </label>
+          </div>
+          <button class="btn btn-ai" onclick="generateArticle()" id="artGenBtn" style="margin-bottom:1.25rem">Generate Full Article</button>
+          <div class="ai-output" id="art-gen-output">
+            <div class="ai-loading" id="art-gen-loading" style="display:none"><div class="ai-spinner"></div> Writing your article…</div>
+            <div id="art-gen-result"></div>
+          </div>
+          <div class="ai-output-actions" id="art-gen-actions" style="display:none">
+            <button class="btn btn-success btn-sm" onclick="saveGeneratedArticle()">💾 Save to Articles</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyGenOutput('art-gen-result')">📋 Copy</button>
+            <button class="btn btn-ghost btn-sm" onclick="generateArticle()">🔄 Regenerate</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q&A Generator -->
+      <div class="ai-gen-panel">
+        <div class="ai-gen-header">
+          <div class="ai-gen-title">❓ Interview Q&A Generator</div>
+          <span class="ai-tag">✨ AI</span>
+        </div>
+        <div class="ai-gen-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Question Topic</label>
+              <input type="text" class="ai-prompt-input" id="q-topic" placeholder="e.g. Difference between smoke and sanity testing">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="q-gen-category">
+                <option value="General">General QA</option>
+                <option value="Selenium">Selenium</option>
+                <option value="ISTQB">ISTQB</option>
+                <option value="API Testing">API Testing</option>
+                <option value="Performance">Performance</option>
+                <option value="Agile">Agile / Scrum</option>
+              </select>
+            </div>
+          </div>
+          <div class="ai-options">
+            <select id="q-gen-difficulty">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate" selected>Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+            <select id="q-gen-count">
+              <option value="1">1 question</option>
+              <option value="5" selected>5 questions</option>
+              <option value="10">10 questions</option>
+            </select>
+          </div>
+          <button class="btn btn-ai" onclick="generateQuestions()" style="margin-bottom:1.25rem">Generate Q&As</button>
+          <div class="ai-output" id="q-gen-output">
+            <div class="ai-loading" id="q-gen-loading" style="display:none"><div class="ai-spinner"></div> Crafting expert answers…</div>
+            <div id="q-gen-result"></div>
+          </div>
+          <div class="ai-output-actions" id="q-gen-actions" style="display:none">
+            <button class="btn btn-success btn-sm" onclick="saveGeneratedQuestions()">💾 Save All to Q&A Bank</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyGenOutput('q-gen-result')">📋 Copy</button>
+            <button class="btn btn-ghost btn-sm" onclick="generateQuestions()">🔄 Regenerate</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Outline Generator -->
+      <div class="ai-gen-panel">
+        <div class="ai-gen-header">
+          <div class="ai-gen-title">🎓 Course Outline Generator</div>
+          <span class="ai-tag">✨ AI</span>
+        </div>
+        <div class="ai-gen-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Course Name</label>
+              <input type="text" class="ai-prompt-input" id="course-topic" placeholder="e.g. Selenium WebDriver with Java — Complete Beginner to Expert">
+            </div>
+            <div class="form-group">
+              <label>Target Audience</label>
+              <select id="course-audience">
+                <option value="freshers">Freshers / 0-1 years</option>
+                <option value="mid">Mid Level / 2-4 years</option>
+                <option value="senior">Senior / 5+ years</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-ai" onclick="generateCourseOutline()" style="margin-bottom:1.25rem">Generate Course Outline</button>
+          <div class="ai-output" id="course-gen-output">
+            <div class="ai-loading" id="course-gen-loading" style="display:none"><div class="ai-spinner"></div> Building course structure…</div>
+            <div id="course-gen-result"></div>
+          </div>
+          <div class="ai-output-actions" id="course-gen-actions" style="display:none">
+            <button class="btn btn-success btn-sm" onclick="saveGeneratedCourse()">💾 Save as Course</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyGenOutput('course-gen-result')">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO Generator -->
+      <div class="ai-gen-panel">
+        <div class="ai-gen-header">
+          <div class="ai-gen-title">🔍 SEO Meta Generator</div>
+          <span class="ai-tag">✨ AI</span>
+        </div>
+        <div class="ai-gen-body">
+          <div class="form-group">
+            <label>Page / Article Topic</label>
+            <input type="text" class="ai-prompt-input" id="seo-topic" placeholder="e.g. ISTQB Foundation Level exam guide for India 2025">
+          </div>
+          <button class="btn btn-ai" onclick="generateSEO()" style="margin-bottom:1.25rem">Generate SEO Tags</button>
+          <div class="ai-output" id="seo-gen-output">
+            <div class="ai-loading" id="seo-gen-loading" style="display:none"><div class="ai-spinner"></div> Optimising for Google…</div>
+            <div id="seo-gen-result"></div>
+          </div>
+          <div class="ai-output-actions" id="seo-gen-actions" style="display:none">
+            <button class="btn btn-ghost btn-sm" onclick="copyGenOutput('seo-gen-result')">📋 Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BATCH GENERATOR ── -->
+    <div class="panel" id="panel-batch">
+      <div style="margin-bottom:1.5rem">
+        <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">🚀 Batch Content Generator</h2>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:4px">Generate multiple articles or Q&As at once and save them all to your content library</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header"><h3>Configure Batch</h3></div>
+        <div style="padding:1.5rem">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Content Type</label>
+              <select id="batch-type">
+                <option value="articles">Articles</option>
+                <option value="questions">Interview Q&As</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="batch-category">
+                <option value="Selenium">Selenium</option>
+                <option value="ISTQB">ISTQB</option>
+                <option value="Career">Career</option>
+                <option value="API Testing">API Testing</option>
+                <option value="Performance">Performance</option>
+                <option value="General">General QA</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Topics (one per line — or leave blank for AI to choose)</label>
+            <textarea id="batch-topics" style="min-height:120px" placeholder="Leave blank to auto-generate topics, OR enter:\nTop 50 Selenium Interview Questions 2025\nJMeter Tutorial for Beginners\nIST QB Foundation Level Complete Guide&#10;..."></textarea>
+          </div>
+          <div class="ai-options">
+            <select id="batch-count">
+              <option value="3">3 items</option>
+              <option value="5" selected>5 items</option>
+              <option value="10">10 items</option>
+            </select>
+            <select id="batch-length">
+              <option value="short">Short articles</option>
+              <option value="medium" selected>Medium articles</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:.75rem;margin-top:.75rem">
+            <button class="btn btn-ai" onclick="startBatch()" id="batchStartBtn">🚀 Start Batch Generation</button>
+            <button class="btn btn-ghost" onclick="clearBatch()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Generation Queue</h3>
+          <div style="display:flex;gap:.5rem">
+            <span id="batch-progress" style="font-size:.78rem;color:var(--muted)"></span>
+            <button class="btn btn-success btn-sm" id="batchSaveBtn" style="display:none" onclick="saveAllBatch()">💾 Save All</button>
+          </div>
+        </div>
+        <div style="padding:1.25rem" id="batch-queue">
+          <div class="empty-state"><div class="ico">🚀</div><h4>Queue empty</h4><p>Configure and start a batch generation above</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MEDIA ── -->
+    <div class="panel" id="panel-media">
+      <div style="margin-bottom:1.5rem">
+        <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">Media Library</h2>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Upload Media</h3></div>
+        <div style="padding:1.5rem">
+          <div class="upload-zone" onclick="document.getElementById('file-upload').click()">
+            <div style="font-size:2rem;margin-bottom:.75rem">📁</div>
+            <p style="font-size:.875rem;color:var(--muted)">Click to upload images, PDFs, or drag & drop</p>
+            <p style="font-size:.78rem;color:var(--muted);margin-top:.3rem">PNG, JPG, GIF up to 10MB</p>
+            <input type="file" id="file-upload" multiple accept="image/*,.pdf" style="display:none" onchange="handleUpload(event)">
+          </div>
+          <div class="media-grid" id="media-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HOSTING GUIDE ── -->
+    <div class="panel" id="panel-hosting">
+      <div style="margin-bottom:1.5rem">
+        <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">🌐 Host on testproindia.com</h2>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:4px">Step-by-step guide to deploy your TestPro website with your custom domain</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header"><h3>Recommended Hosting Providers</h3></div>
+        <div style="padding:1.25rem">
+          <div class="provider-card">
+            <div><div class="provider-name">Netlify <span style="font-size:.72rem;color:var(--muted)">(netlify.com)</span></div><div class="provider-desc">Drag & drop your zip, connect domain. Free tier is generous. SSL auto-configured.</div></div>
+            <span class="provider-tag tag-recommended">⭐ Best for Beginners</span>
+          </div>
+          <div class="provider-card">
+            <div><div class="provider-name">Vercel <span style="font-size:.72rem;color:var(--muted)">(vercel.com)</span></div><div class="provider-desc">Ultra-fast CDN, free tier, GitHub deployment. Best performance globally.</div></div>
+            <span class="provider-tag tag-free">Free</span>
+          </div>
+          <div class="provider-card">
+            <div><div class="provider-name">GitHub Pages <span style="font-size:.72rem;color:var(--muted)">(pages.github.com)</span></div><div class="provider-desc">Free hosting from a GitHub repo. Requires GitHub account.</div></div>
+            <span class="provider-tag tag-free">Free</span>
+          </div>
+          <div class="provider-card">
+            <div><div class="provider-name">Hostinger India <span style="font-size:.72rem;color:var(--muted)">(hostinger.in)</span></div><div class="provider-desc">₹99/month. Good for Indian users, cPanel, easy domain connection.</div></div>
+            <span class="provider-tag tag-paid">Paid</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Step-by-Step: Deploy on Netlify + testproindia.com</h3></div>
+        <div style="padding:1.25rem">
+          <div class="host-step">
+            <div class="host-step-num">1</div>
+            <div><div class="host-step-title">Get your domain</div><div class="host-step-desc">Purchase <code>testproindia.com</code> from GoDaddy, Namecheap, or BigRock (India). Cost: ~₹800-1500/year. If already purchased, skip to step 2.</div></div>
+          </div>
+          <div class="host-step">
+            <div class="host-step-num">2</div>
+            <div><div class="host-step-title">Download your site files</div><div class="host-step-desc">Download the TestPro zip (your current project). Make sure it includes <code>index.html</code>, <code>admin.html</code>, <code>shared.css</code>, and all article/page files.</div></div>
+          </div>
+          <div class="host-step">
+            <div class="host-step-num">3</div>
+            <div><div class="host-step-title">Deploy to Netlify</div><div class="host-step-desc">Go to <code>netlify.com</code> → Sign up free → Click "Add new site" → "Deploy manually" → Drag and drop your site folder. Your site will be live at a random Netlify URL instantly.</div></div>
+          </div>
+          <div class="host-step">
+            <div class="host-step-num">4</div>
+            <div><div class="host-step-title">Connect testproindia.com</div><div class="host-step-desc">In Netlify → Site settings → Domain management → Add custom domain → Enter <code>testproindia.com</code>. Netlify will give you nameservers (e.g. <code>dns1.p01.nsone.net</code>).</div></div>
+          </div>
+          <div class="host-step">
+            <div class="host-step-num">5</div>
+            <div><div class="host-step-title">Update DNS nameservers</div><div class="host-step-desc">In your domain registrar (GoDaddy/Namecheap), go to DNS settings → Replace nameservers with the ones Netlify provided. DNS propagation takes 1-24 hours.</div></div>
+          </div>
+          <div class="host-step">
+            <div class="host-step-num">6</div>
+            <div><div class="host-step-title">Enable free SSL (HTTPS)</div><div class="host-step-desc">Netlify auto-generates a Let's Encrypt SSL certificate once DNS propagates. Enable it in Site settings → HTTPS → Verify DNS configuration → Provision certificate.</div></div>
+          </div>
+          <div class="host-step">
+            <div class="host-step-num">7</div>
+            <div><div class="host-step-title">Update content & redeploy</div><div class="host-step-desc">Whenever you add new articles or content via this admin panel, download the updated files and drag-drop again to Netlify. Or connect a GitHub repo for automatic deploys.</div></div>
+          </div>
+          <div style="background:linear-gradient(135deg,rgba(0,200,150,.08),rgba(0,102,255,.05));border:1px solid rgba(0,200,150,.2);border-radius:10px;padding:1rem;margin-top:1rem">
+            <div style="font-weight:600;font-size:.875rem;margin-bottom:.3rem">💡 Pro Tip — Use Google AdSense</div>
+            <div style="font-size:.82rem;color:var(--muted);line-height:1.5">Once your site is live at testproindia.com, apply for <strong>Google AdSense</strong> to monetize your traffic. Your site already has ad slot placeholders built in. Apply at <code>adsense.google.com</code> after getting 20-30 articles published.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="panel" id="panel-settings">
+      <div style="margin-bottom:1.5rem">
+        <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem">Settings</h2>
+      </div>
+
+      <div class="settings-section" style="border-color:rgba(0,200,150,.3)">
+        <h3>🐙 GitHub Sync (Required for Live Site)</h3>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">Connect to GitHub so content you create here automatically updates your live site on testproindia.com. <a href="#" onclick="showGHHelp()" style="color:var(--ai-purple)">How to set this up →</a></p>
+        <div class="form-group">
+          <label>GitHub Personal Access Token</label>
+          <div class="api-key-row">
+            <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+            <button class="btn btn-primary" onclick="saveGHSettings()">Save</button>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.4rem">Get a free token at <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--ai-purple)">github.com/settings/tokens</a> → Generate new token (classic) → check <strong>repo</strong> scope.</p>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>GitHub Username</label>
+            <input type="text" id="gh-user" placeholder="your-github-username">
+          </div>
+          <div class="form-group">
+            <label>Repository Name</label>
+            <input type="text" id="gh-repo" placeholder="testproindia">
+          </div>
+        </div>
+        <div id="gh-status" style="font-size:.8rem;margin-top:.5rem"></div>
+        <button class="btn btn-success btn-sm" onclick="testGHConnection()" style="margin-top:.5rem">🔗 Test Connection</button>
+      </div>
+
+      <div class="settings-section" style="border-color:rgba(124,58,237,.3)">
+        <h3>✨ AI Configuration</h3>
+        <div class="form-group">
+          <label>Google Gemini API Key (Free)</label>
+          <div class="api-key-row">
+            <input type="password" id="api-key-input" placeholder="AIza…" value="">
+            <button class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.4rem">Get your <strong>free</strong> API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--ai-purple)">aistudio.google.com</a> → Sign in with Google → "Get API key". No credit card needed. Your key is stored locally in your browser only.</p>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Auto-save AI generated content</div><div class="toggle-desc">Automatically save generated articles as drafts</div></div>
+          <label class="toggle"><input type="checkbox" id="toggle-autosave" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Indian market focus</div><div class="toggle-desc">Tailor all AI content for Indian IT companies (TCS, Infosys, Wipro context)</div></div>
+          <label class="toggle"><input type="checkbox" id="toggle-india" checked><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Site Settings</h3>
+        <div class="form-group"><label>Site Name</label><input type="text" id="s-sitename" value="TestPro India"></div>
+        <div class="form-group"><label>Domain</label><input type="text" id="s-domain" placeholder="testproindia.com" value="testproindia.com"></div>
+        <div class="form-group"><label>Google AdSense Publisher ID</label><input type="text" id="s-adsense" placeholder="pub-XXXXXXXXXXXXXXXX"></div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Show ads on articles</div><div class="toggle-desc">Display AdSense banners</div></div>
+          <label class="toggle"><input type="checkbox" id="toggle-ads" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-success" onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+      </div>
+
+      <div class="settings-section" style="border-color:rgba(239,68,68,.2)">
+        <h3 style="color:var(--danger)">Danger Zone</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div class="toggle-label">Clear all content</div><div class="toggle-desc">Permanently delete all articles, questions, courses from local storage</div></div>
+          <button class="btn btn-danger" onclick="confirmClear()">Clear All Data</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ── ARTICLE MODAL ── -->
+<div class="modal-backdrop" id="articleModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
+    <h2 id="articleModalTitle">New Article</h2>
+    <input type="hidden" id="article-edit-id">
+    <div class="form-group"><label>Article Title *</label><input type="text" id="art-title" placeholder="e.g. Top 50 Selenium Interview Questions for 2025"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="art-category">
+          <option value="">Select category</option>
+          <option value="Selenium">Selenium</option>
+          <option value="ISTQB">ISTQB</option>
+          <option value="Career">Career</option>
+          <option value="API Testing">API Testing</option>
+          <option value="Performance">Performance</option>
+          <option value="Salary">Salary</option>
+          <option value="Tools">Tools</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="art-status"><option value="draft">Draft</option><option value="published">Published</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Read Time (min)</label><input type="number" id="art-readtime" placeholder="8" min="1" max="60"></div>
+      <div class="form-group"><label>SEO Meta Description</label><input type="text" id="art-meta" placeholder="Brief description for Google (155 chars)"></div>
+    </div>
+    <div class="form-group">
+      <label>Content *</label>
+      <div class="editor-toolbar">
+        <button class="toolbar-btn" onclick="fmt('bold')"><b>B</b></button>
+        <button class="toolbar-btn" onclick="fmt('italic')"><i>I</i></button>
+        <button class="toolbar-btn" onclick="fmt('underline')"><u>U</u></button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" onclick="fmt('insertUnorderedList')">• List</button>
+        <button class="toolbar-btn" onclick="fmt('insertOrderedList')">1. List</button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" onclick="insertHeading()">H2</button>
+        <button class="toolbar-btn" onclick="insertCode()">Code</button>
+        <div class="toolbar-sep"></div>
+        <button class="toolbar-btn" onclick="fmt('removeFormat')">Clear</button>
+      </div>
+      <div class="editor-area" id="art-content" contenteditable="true" data-placeholder="Start writing your article here…"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-success" onclick="saveArticle()">💾 Save Article</button>
+      <button class="btn btn-ghost" onclick="closeModal('articleModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── QUESTION MODAL ── -->
+<div class="modal-backdrop" id="questionModal">
+  <div class="modal modal-sm">
+    <button class="modal-close" onclick="closeModal('questionModal')">✕</button>
+    <h2 id="questionModalTitle">Add Interview Question</h2>
+    <input type="hidden" id="question-edit-id">
+    <div class="form-group"><label>Question *</label><textarea id="q-question" style="min-height:80px" placeholder="e.g. What is the difference between Smoke and Sanity testing?"></textarea></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="q-category">
+          <option value="General">General QA</option>
+          <option value="Selenium">Selenium</option>
+          <option value="ISTQB">ISTQB</option>
+          <option value="API Testing">API Testing</option>
+          <option value="Performance">Performance</option>
+          <option value="Agile">Agile / Scrum</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Difficulty</label>
+        <select id="q-difficulty">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Answer *</label><textarea id="q-answer" placeholder="Write a detailed, interview-ready answer…"></textarea></div>
+    <div class="form-group"><label>Pro Tip (optional)</label><input type="text" id="q-tip" placeholder="e.g. Mention a real-world example to impress the interviewer"></div>
+    <div class="form-actions">
+      <button class="btn btn-success" onclick="saveQuestion()">💾 Save Question</button>
+      <button class="btn btn-ghost" onclick="closeModal('questionModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── COURSE MODAL ── -->
+<div class="modal-backdrop" id="courseModal">
+  <div class="modal modal-sm">
+    <button class="modal-close" onclick="closeModal('courseModal')">✕</button>
+    <h2>New Course</h2>
+    <div class="form-group"><label>Course Title *</label><input type="text" id="c-title" placeholder="e.g. Selenium WebDriver Zero to Hero"></div>
+    <div class="form-group"><label>Description</label><textarea id="c-desc" style="min-height:100px" placeholder="What will students learn?"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Type</label><select id="c-type"><option value="free">Free</option><option value="paid">Paid</option></select></div>
+      <div class="form-group"><label>Price (₹) — for paid</label><input type="number" id="c-price" placeholder="2999"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Lessons</label><input type="number" id="c-lessons" placeholder="12"></div>
+      <div class="form-group"><label>Duration</label><input type="text" id="c-duration" placeholder="e.g. 8 hours"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-success" onclick="saveCourse()">💾 Save Course</button>
+      <button class="btn btn-ghost" onclick="closeModal('courseModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── STORAGE ──
+const DB = {
+  get(k) { try { return JSON.parse(localStorage.getItem('tp_'+k)||'[]'); } catch { return []; } },
+  set(k,v) { localStorage.setItem('tp_'+k,JSON.stringify(v)); },
+  getS(k,d='') { return localStorage.getItem('tp_s_'+k)||d; },
+  setS(k,v) { localStorage.setItem('tp_s_'+k,v); }
+};
+
+// ── API KEY ──
+function getApiKey() { return DB.getS('apikey',''); }
+function saveApiKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k) { toast('Enter an API key','error'); return; }
+  DB.setS('apikey', k);
+  updateApiStatus();
+  toast('API key saved!','success');
+}
+function updateApiStatus() {
+  const k = getApiKey();
+  const dot = document.getElementById('apiDot');
+  const txt = document.getElementById('apiStatusText');
+  if (k) { dot.classList.add('connected'); txt.textContent = 'AI connected'; }
+  else { dot.classList.remove('connected'); txt.textContent = 'AI not configured'; }
+}
+
+// ── GEMINI API CALL (auto-detects working model) ──
+let _workingModel = null;
+
+// Try fetching the live model list first, then fall back to known models
+async function findWorkingModel(key) {
+  if (_workingModel) return _workingModel;
+
+  // Step 1: Try to list models from the API to get the freshest list
+  let modelNames = [];
+  try {
+    const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+    if (listResp.ok) {
+      const listData = await listResp.json();
+      // Extract model names that support generateContent, prefer flash models
+      const all = (listData.models || [])
+        .filter(m => (m.supportedGenerationMethods||[]).includes('generateContent'))
+        .map(m => m.name.replace('models/', ''));
+      // Prioritise flash/fast models first
+      const flash = all.filter(m => m.includes('flash') && !m.includes('image') && !m.includes('tts') && !m.includes('audio'));
+      const others = all.filter(m => !flash.includes(m) && !m.includes('image') && !m.includes('tts') && !m.includes('audio') && !m.includes('embedding'));
+      modelNames = [...flash, ...others];
+      console.log('Available models from API:', modelNames.slice(0,8));
+    }
+  } catch(e) { console.warn('Could not list models:', e.message); }
+
+  // Step 2: Always append known fallbacks in case list fails or is incomplete
+  const fallbacks = [
+    'gemini-3-flash-preview',
+    'gemini-2.5-flash-preview-04-17',
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-lite',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-8b',
+    'gemini-pro'
+  ];
+  const toTry = [...new Set([...modelNames, ...fallbacks])];
+
+  // Step 3: Test each model with a tiny prompt
+  const testBody = JSON.stringify({ contents:[{parts:[{text:'Hi'}]}], generationConfig:{maxOutputTokens:5} });
+  for (const model of toTry) {
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        { method:'POST', headers:{'Content-Type':'application/json'}, body:testBody }
+      );
+      if (r.ok) {
+        _workingModel = model;
+        console.log('Using model:', model);
+        return model;
+      } else {
+        const err = await r.json();
+        // Stop on auth errors - no point trying more models
+        if (r.status === 400 && err.error?.message?.includes('API key')) {
+          throw new Error('Invalid API key. Get a free key at aistudio.google.com');
+        }
+      }
+    } catch(e) {
+      if (e.message.includes('Invalid API key')) throw e;
+      // Otherwise try next model
+    }
+  }
+  return null;
+}
+
+async function callClaude(prompt, system='') {
+  const key = getApiKey();
+  if (!key) { toast('Add your Gemini API key in Settings first','error'); return null; }
+  const model = await findWorkingModel(key);
+  if (!model) throw new Error('No working Gemini model found. Please get a new API key from aistudio.google.com/app/apikey');
+  const fullPrompt = system ? system + '\n\n' + prompt : prompt;
+  const body = {
+    contents: [{ parts: [{ text: fullPrompt }] }],
+    generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
+  };
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+  );
+  if (!resp.ok) {
+    _workingModel = null; // reset so next call tries again
+    const e = await resp.json();
+    throw new Error(e.error?.message || 'Gemini API error');
+  }
+  const data = await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+function indiaContext() {
+  const on = document.getElementById('toggle-india')?.checked;
+  return on ? ' Target Indian IT professionals at companies like TCS, Infosys, Wipro, HCL, Cognizant. Reference Indian salary ranges in INR, mention ISTQB certification value in India, and use examples relevant to Indian IT market.' : '';
+}
+
+// ── PANEL NAV ──
+const panelTitles = { dashboard:'Dashboard', articles:'Articles', questions:'Interview Q&A', courses:'Courses', ai:'AI Content Studio', batch:'Batch Generator', media:'Media Library', hosting:'Hosting Guide', settings:'Settings' };
+function showPanel(n) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('panel-'+n)?.classList.add('active');
+  document.getElementById('panelTitle').textContent = panelTitles[n] || n;
+  document.querySelectorAll('.nav-item').forEach(x => {
+    const t = x.textContent.trim().toLowerCase();
+    if (n==='ai' && t.includes('studio')) x.classList.add('active');
+    else if (n==='batch' && t.includes('batch')) x.classList.add('active');
+    else if (n==='hosting' && t.includes('hosting')) x.classList.add('active');
+    else if (t.includes((panelTitles[n]||'').toLowerCase().split(' ')[0])) x.classList.add('active');
+  });
+  if (n==='dashboard') renderDashboard();
+  if (n==='articles') renderArticles();
+  if (n==='questions') renderQuestions();
+  if (n==='courses') renderCourses();
+  if (n==='media') renderMedia();
+  if (n==='settings') { const k = getApiKey(); if (k) document.getElementById('api-key-input').value = k; loadGHSettings(); }
+}
+
+// ── TOAST ──
+function toast(msg, type='default') {
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = (type==='success'?'✓ ':type==='error'?'✕ ':type==='ai'?'✨ ':'ℹ ')+msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+}
+
+// ── MODALS ──
+function openArticleModal(id=null) {
+  clearArticleForm();
+  document.getElementById('articleModalTitle').textContent = id ? 'Edit Article' : 'New Article';
+  if (id) {
+    const a = DB.get('articles').find(x=>x.id===id);
+    if (a) {
+      document.getElementById('article-edit-id').value = id;
+      document.getElementById('art-title').value = a.title;
+      document.getElementById('art-category').value = a.category;
+      document.getElementById('art-status').value = a.status;
+      document.getElementById('art-readtime').value = a.readtime;
+      document.getElementById('art-meta').value = a.meta||'';
+      document.getElementById('art-content').innerHTML = a.content;
+    }
+  }
+  document.getElementById('articleModal').classList.add('open');
+}
+function openQuestionModal(id=null) {
+  clearQuestionForm();
+  document.getElementById('questionModalTitle').textContent = id ? 'Edit Question' : 'Add Interview Question';
+  if (id) {
+    const q = DB.get('questions').find(x=>x.id===id);
+    if (q) {
+      document.getElementById('question-edit-id').value = id;
+      document.getElementById('q-question').value = q.question;
+      document.getElementById('q-category').value = q.category;
+      document.getElementById('q-difficulty').value = q.difficulty;
+      document.getElementById('q-answer').value = q.answer;
+      document.getElementById('q-tip').value = q.tip||'';
+    }
+  }
+  document.getElementById('questionModal').classList.add('open');
+}
+function openCourseModal() {
+  ['c-title','c-desc','c-price','c-lessons','c-duration'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('c-type').value='free';
+  document.getElementById('courseModal').classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// ── ARTICLE CRUD ──
+function clearArticleForm() {
+  ['article-edit-id','art-title','art-meta'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('art-category').value='';
+  document.getElementById('art-status').value='draft';
+  document.getElementById('art-readtime').value='';
+  document.getElementById('art-content').innerHTML='';
+}
+function saveArticle() {
+  const title = document.getElementById('art-title').value.trim();
+  const category = document.getElementById('art-category').value;
+  const content = document.getElementById('art-content').innerHTML.trim();
+  if (!title) { toast('Please enter a title','error'); return; }
+  if (!category) { toast('Please select a category','error'); return; }
+  if (!content) { toast('Please write some content','error'); return; }
+  const arts = DB.get('articles');
+  const editId = document.getElementById('article-edit-id').value;
+  const article = {
+    id: editId || Date.now().toString(), title, category, content,
+    status: document.getElementById('art-status').value,
+    readtime: document.getElementById('art-readtime').value||'5',
+    meta: document.getElementById('art-meta').value,
+    date: editId ? (arts.find(a=>a.id===editId)?.date||new Date().toLocaleDateString('en-IN')) : new Date().toLocaleDateString('en-IN'),
+    updated: new Date().toLocaleDateString('en-IN')
+  };
+  if (editId) { const i=arts.findIndex(a=>a.id===editId); if(i>-1) arts[i]=article; }
+  else arts.unshift(article);
+  DB.set('articles',arts);
+  closeModal('articleModal'); renderArticles(); renderDashboard();
+  toast('Article saved!','success');
+}
+function deleteArticle(id) {
+  if (!confirm('Delete this article?')) return;
+  DB.set('articles',DB.get('articles').filter(a=>a.id!==id));
+  renderArticles(); renderDashboard(); toast('Article deleted');
+}
+function toggleArticleStatus(id) {
+  const arts = DB.get('articles');
+  const a = arts.find(x=>x.id===id);
+  if (a) { a.status = a.status==='published'?'draft':'published'; DB.set('articles',arts); renderArticles(); renderDashboard(); toast('Status updated','success'); }
+}
+
+// ── QUESTION CRUD ──
+function clearQuestionForm() {
+  ['question-edit-id','q-question','q-answer','q-tip'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('q-category').value='General';
+  document.getElementById('q-difficulty').value='Beginner';
+}
+function saveQuestion() {
+  const question = document.getElementById('q-question').value.trim();
+  const answer = document.getElementById('q-answer').value.trim();
+  if (!question||!answer) { toast('Question and answer required','error'); return; }
+  const qs = DB.get('questions');
+  const editId = document.getElementById('question-edit-id').value;
+  const q = {
+    id: editId||Date.now().toString(), question, answer,
+    category: document.getElementById('q-category').value,
+    difficulty: document.getElementById('q-difficulty').value,
+    tip: document.getElementById('q-tip').value,
+    date: new Date().toLocaleDateString('en-IN')
+  };
+  if (editId) { const i=qs.findIndex(x=>x.id===editId); if(i>-1) qs[i]=q; } else qs.unshift(q);
+  DB.set('questions',qs); closeModal('questionModal'); renderQuestions();
+  toast('Question saved!','success');
+}
+function deleteQuestion(id) {
+  if (!confirm('Delete this question?')) return;
+  DB.set('questions',DB.get('questions').filter(q=>q.id!==id));
+  renderQuestions(); toast('Question deleted');
+}
+
+// ── COURSE CRUD ──
+function saveCourse() {
+  const title = document.getElementById('c-title').value.trim();
+  if (!title) { toast('Please enter a course title','error'); return; }
+  const courses = DB.get('courses');
+  courses.unshift({
+    id: Date.now().toString(), title,
+    desc: document.getElementById('c-desc').value,
+    type: document.getElementById('c-type').value,
+    price: document.getElementById('c-price').value,
+    lessons: document.getElementById('c-lessons').value,
+    duration: document.getElementById('c-duration').value,
+    status: 'draft', date: new Date().toLocaleDateString('en-IN')
+  });
+  DB.set('courses',courses); closeModal('courseModal'); renderCourses();
+  toast('Course created!','success');
+}
+function deleteCourse(id) {
+  if (!confirm('Delete this course?')) return;
+  DB.set('courses',DB.get('courses').filter(c=>c.id!==id));
+  renderCourses(); toast('Course deleted');
+}
+
+// ── RENDER ──
+function renderArticles(filter='') {
+  const arts = DB.get('articles').filter(a=>!filter||a.title.toLowerCase().includes(filter.toLowerCase()));
+  const tbody = document.getElementById('articles-tbody');
+  const empty = document.getElementById('articles-empty');
+  const table = document.getElementById('articles-table');
+  if (arts.length===0) { empty.style.display=''; table.style.display='none'; return; }
+  empty.style.display='none'; table.style.display='';
+  tbody.innerHTML = arts.map(a=>`
+    <tr>
+      <td style="max-width:280px"><div style="font-weight:500;line-height:1.3">${a.title}</div><div style="font-size:.75rem;color:var(--muted);margin-top:2px">Updated ${a.updated||a.date}</div></td>
+      <td><span class="tag-pill">${a.category}</span></td>
+      <td style="color:var(--muted)">${a.readtime} min</td>
+      <td><span class="status status-${a.status}">${a.status}</span></td>
+      <td style="color:var(--muted)">${a.date}</td>
+      <td><div style="display:flex;gap:.35rem">
+        <button class="btn btn-ghost btn-sm" onclick="openArticleModal('${a.id}')">Edit</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleArticleStatus('${a.id}')">${a.status==='published'?'Unpublish':'Publish'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteArticle('${a.id}')">Del</button>
+      </div></td>
+    </tr>`).join('');
+}
+function renderQuestions() {
+  const qs = DB.get('questions');
+  const empty = document.getElementById('questions-empty');
+  const table = document.getElementById('questions-table');
+  if (qs.length===0) { empty.style.display=''; table.style.display='none'; return; }
+  empty.style.display='none'; table.style.display='';
+  const diffColor = {Beginner:'var(--accent)',Intermediate:'var(--warn)',Advanced:'var(--danger)'};
+  document.getElementById('questions-tbody').innerHTML = qs.map(q=>`
+    <tr>
+      <td style="max-width:340px"><div style="font-weight:500">${q.question}</div>${q.tip?`<div style="font-size:.75rem;color:var(--accent);margin-top:3px">💡 ${q.tip}</div>`:''}</td>
+      <td><span class="tag-pill">${q.category}</span></td>
+      <td><span style="font-size:.78rem;font-weight:600;color:${diffColor[q.difficulty]||'var(--muted)'}">${q.difficulty}</span></td>
+      <td><div style="display:flex;gap:.35rem">
+        <button class="btn btn-ghost btn-sm" onclick="openQuestionModal('${q.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')">Del</button>
+      </div></td>
+    </tr>`).join('');
+}
+function renderCourses() {
+  const cs = DB.get('courses');
+  const empty = document.getElementById('courses-empty');
+  const table = document.getElementById('courses-table');
+  if (cs.length===0) { empty.style.display=''; table.style.display='none'; return; }
+  empty.style.display='none'; table.style.display='';
+  document.getElementById('courses-tbody').innerHTML = cs.map(c=>`
+    <tr>
+      <td><div style="font-weight:500">${c.title}</div><div style="font-size:.78rem;color:var(--muted);margin-top:2px">${c.desc?.substring(0,80)||''}…</div></td>
+      <td><span class="tag-pill" style="${c.type==='free'?'color:#008060':'color:var(--warn)'}">${c.type==='free'?'FREE':'PAID ₹'+c.price}</span></td>
+      <td style="color:var(--muted)">${c.lessons||'—'} lessons</td>
+      <td style="color:var(--muted)">${c.duration||'—'}</td>
+      <td><span class="status status-${c.status}">${c.status}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteCourse('${c.id}')">Del</button></td>
+    </tr>`).join('');
+}
+function renderDashboard() {
+  const arts = DB.get('articles');
+  const qs = DB.get('questions');
+  const cs = DB.get('courses');
+  document.getElementById('stat-arts').textContent = arts.length;
+  document.getElementById('stat-qs').textContent = qs.length;
+  document.getElementById('stat-courses').textContent = cs.length;
+  document.getElementById('stat-drafts').textContent = arts.filter(a=>a.status==='draft').length;
+  const recent = [...arts.slice(0,3), ...qs.slice(0,2)];
+  const rc = document.getElementById('dash-recent');
+  if (recent.length===0) { rc.innerHTML = '<div class="empty-state"><div class="ico">📭</div><h4>No content yet</h4><p>Use the AI Studio to generate your first article</p></div>'; return; }
+  rc.innerHTML = `<table><thead><tr><th>Content</th><th>Type</th><th>Status/Category</th><th>Date</th></tr></thead><tbody>
+    ${arts.slice(0,3).map(a=>`<tr>
+      <td style="max-width:260px"><div style="font-weight:500;font-size:.88rem">${a.title}</div></td>
+      <td><span class="tag-pill">Article</span></td>
+      <td><span class="status status-${a.status}">${a.status}</span></td>
+      <td style="color:var(--muted);font-size:.78rem">${a.date}</td>
+    </tr>`).join('')}
+    ${qs.slice(0,2).map(q=>`<tr>
+      <td style="max-width:260px"><div style="font-weight:500;font-size:.88rem">${q.question.substring(0,60)}…</div></td>
+      <td><span class="tag-pill">Q&A</span></td>
+      <td><span class="tag-pill">${q.category}</span></td>
+      <td style="color:var(--muted);font-size:.78rem">${q.date}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+function renderMedia() {
+  const items = DB.get('media');
+  const grid = document.getElementById('media-grid');
+  grid.innerHTML = items.map(m=>`
+    <div class="media-item">
+      <div class="media-thumb">${m.thumb||'📄'}</div>
+      <div class="media-info">
+        <div class="media-name">${m.name}</div>
+        <div class="media-size">${m.size}</div>
+      </div>
+    </div>`).join('');
+}
+function handleUpload(e) {
+  const files = Array.from(e.target.files);
+  const items = DB.get('media');
+  files.forEach(f => {
+    items.push({ id: Date.now().toString(), name: f.name, size: (f.size/1024).toFixed(0)+' KB', thumb: f.type.startsWith('image/') ? '🖼️' : '📄' });
+  });
+  DB.set('media', items);
+  renderMedia();
+  toast(`${files.length} file(s) uploaded`, 'success');
+}
+
+// ── EDITOR HELPERS ──
+function fmt(cmd) { document.execCommand(cmd, false, null); document.getElementById('art-content')?.focus(); }
+function insertHeading() { document.execCommand('formatBlock', false, 'h2'); }
+function insertCode() { document.execCommand('formatBlock', false, 'pre'); }
+
+// ── SHOW AI OUTPUT ──
+function showOutput(outputId, loadingId, actionsId, content) {
+  const out = document.getElementById(outputId);
+  const loading = document.getElementById(loadingId);
+  const actions = document.getElementById(actionsId);
+  out.classList.add('visible');
+  loading.style.display = 'none';
+  document.getElementById(outputId.replace('-output', '-result')).innerHTML = content.replace(/\n/g,'<br>');
+  if (actionsId) actions.style.display = 'flex';
+}
+function setLoading(outputId, loadingId, actionsId, on) {
+  const out = document.getElementById(outputId);
+  const loading = document.getElementById(loadingId);
+  if (actionsId) document.getElementById(actionsId).style.display = 'none';
+  if (on) { out.classList.add('visible'); loading.style.display = 'flex'; document.getElementById(outputId.replace('-output','-result')).innerHTML = ''; }
+  else { loading.style.display = 'none'; }
+}
+function copyGenOutput(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(()=>toast('Copied to clipboard!','success'));
+}
+
+// ── AI GENERATORS ──
+let lastGeneratedArticle = null;
+let lastGeneratedQuestions = [];
+let lastGeneratedCourse = null;
+
+async function generateArticle() {
+  if (!getApiKey()) { toast('Add your API key in Settings first','error'); return; }
+  const topic = document.getElementById('art-topic').value.trim() || 'Top 30 Selenium WebDriver Interview Questions';
+  const cat = document.getElementById('art-gen-category').value;
+  const length = document.getElementById('art-gen-length').value;
+  const tone = document.getElementById('art-gen-tone').value;
+  const seo = document.getElementById('art-gen-seo').checked;
+  const wordCounts = {short:'800',medium:'1400',long:'2400'};
+  const toneMap = {practical:'practical and direct, no fluff',beginner:'beginner-friendly with simple explanations',expert:'expert-level, technical depth'};
+  setLoading('art-gen-output','art-gen-loading','art-gen-actions',true);
+  document.getElementById('artGenBtn').disabled = true;
+  toast('Generating article…','ai');
+  try {
+    const prompt = `Write a professional ${wordCounts[length]}-word QA testing article for an Indian IT audience.
+
+Title/Topic: ${topic}
+Category: ${cat}
+Tone: ${toneMap[tone]}
+${indiaContext()}
+
+Format the article as HTML with:
+- An engaging introduction paragraph
+- Proper H2 and H3 subheadings
+- Bullet points and numbered lists where appropriate
+- Code examples in <pre><code> blocks if relevant
+- A practical conclusion
+
+${seo ? `After the article, add a section labeled "--- SEO DATA ---" with:
+- SEO Title (60 chars max)
+- Meta Description (155 chars max)  
+- 5 focus keywords
+- Estimated read time in minutes` : ''}
+
+Write the article now:`;
+
+    const result = await callClaude(prompt, 'You are an expert QA engineer and technical writer creating content for TestPro India, a leading QA training platform for Indian IT professionals.');
+    
+    // Parse SEO data if present
+    let articleContent = result;
+    let seoData = {};
+    if (seo && result.includes('--- SEO DATA ---')) {
+      const parts = result.split('--- SEO DATA ---');
+      articleContent = parts[0].trim();
+      const seoRaw = parts[1] || '';
+      const metaMatch = seoRaw.match(/Meta Description[:\s]+([^\n]+)/i);
+      const titleMatch = seoRaw.match(/SEO Title[:\s]+([^\n]+)/i);
+      const readMatch = seoRaw.match(/read time[:\s]+(\d+)/i);
+      seoData = {
+        meta: metaMatch?.[1]?.trim() || '',
+        title: titleMatch?.[1]?.trim() || topic,
+        readtime: readMatch?.[1] || '8'
+      };
+    }
+    
+    lastGeneratedArticle = {
+      title: topic, category: cat,
+      content: articleContent,
+      meta: seoData.meta||'',
+      readtime: seoData.readtime||'8',
+      status: 'draft', date: new Date().toLocaleDateString('en-IN'),
+      updated: new Date().toLocaleDateString('en-IN')
+    };
+
+    showOutput('art-gen-output','art-gen-loading','art-gen-actions', articleContent);
+    toast('Article generated!','success');
+  } catch(e) {
+    showOutput('art-gen-output','art-gen-loading',null,'<span style="color:var(--danger)">Error: '+e.message+'</span>');
+    toast('Generation failed: '+e.message,'error');
+  }
+  document.getElementById('artGenBtn').disabled = false;
+}
+
+function saveGeneratedArticle() {
+  if (!lastGeneratedArticle) { toast('Generate an article first','error'); return; }
+  const arts = DB.get('articles');
+  arts.unshift({ ...lastGeneratedArticle, id: Date.now().toString() });
+  DB.set('articles', arts);
+  toast('Article saved to Articles!','success');
+  renderDashboard();
+}
+
+async function generateQuestions() {
+  if (!getApiKey()) { toast('Add your API key in Settings first','error'); return; }
+  const topic = document.getElementById('q-topic').value.trim() || 'Software testing fundamentals';
+  const cat = document.getElementById('q-gen-category').value;
+  const diff = document.getElementById('q-gen-difficulty').value;
+  const count = document.getElementById('q-gen-count').value;
+  setLoading('q-gen-output','q-gen-loading','q-gen-actions',true);
+  toast('Generating Q&As…','ai');
+  try {
+    const prompt = `Generate ${count} ${diff}-level interview questions and detailed expert answers about: "${topic}" for QA engineers.
+${indiaContext()}
+
+Format EXACTLY as JSON array:
+[
+  {
+    "question": "The interview question here?",
+    "answer": "Detailed answer paragraph explaining the concept clearly.",
+    "tip": "One short pro tip for impressing the interviewer",
+    "category": "${cat}",
+    "difficulty": "${diff}"
+  }
+]
+
+Return ONLY the JSON array, no other text.`;
+    const result = await callClaude(prompt, 'You are a senior QA engineer and interview coach for Indian IT companies. Create interview Q&As that reflect real questions asked at TCS, Infosys, Wipro, Cognizant, and HCL.');
+    
+    let qs = [];
+    try {
+      const cleaned = result.replace(/```json\n?|\n?```/g,'').trim();
+      qs = JSON.parse(cleaned);
+    } catch {
+      qs = [{ question: topic + '?', answer: result, tip: '', category: cat, difficulty: diff }];
+    }
+    
+    lastGeneratedQuestions = qs;
+    const html = qs.map((q,i) => `
+      <div style="border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.75rem;background:#fff">
+        <div style="font-weight:600;margin-bottom:.5rem;color:var(--ink)">Q${i+1}: ${q.question}</div>
+        <div style="font-size:.85rem;color:var(--ink2);line-height:1.6;margin-bottom:.5rem">${q.answer}</div>
+        ${q.tip ? `<div style="font-size:.78rem;color:var(--accent);font-weight:500">💡 ${q.tip}</div>` : ''}
+      </div>`).join('');
+    showOutput('q-gen-output','q-gen-loading','q-gen-actions', html);
+    toast(`${qs.length} questions generated!`,'success');
+  } catch(e) {
+    showOutput('q-gen-output','q-gen-loading',null,'<span style="color:var(--danger)">Error: '+e.message+'</span>');
+    toast('Generation failed','error');
+  }
+}
+
+function saveGeneratedQuestions() {
+  if (!lastGeneratedQuestions.length) { toast('Generate questions first','error'); return; }
+  const qs = DB.get('questions');
+  lastGeneratedQuestions.forEach(q => {
+    qs.unshift({ ...q, id: Date.now().toString()+Math.random(), date: new Date().toLocaleDateString('en-IN') });
+  });
+  DB.set('questions', qs);
+  toast(`${lastGeneratedQuestions.length} questions saved!`,'success');
+  renderDashboard();
+}
+
+async function generateCourseOutline() {
+  if (!getApiKey()) { toast('Add your API key in Settings first','error'); return; }
+  const topic = document.getElementById('course-topic').value.trim() || 'Selenium WebDriver with Java';
+  const audience = document.getElementById('course-audience').value;
+  const audienceMap = {freshers:'freshers with 0-1 years experience',mid:'mid-level QA with 2-4 years',senior:'senior QA engineers with 5+ years'};
+  setLoading('course-gen-output','course-gen-loading','course-gen-actions',true);
+  toast('Building course structure…','ai');
+  try {
+    const prompt = `Create a detailed course outline for: "${topic}"
+Target: ${audienceMap[audience]} in Indian IT industry.
+${indiaContext()}
+
+Include:
+- Course description (2-3 sentences)
+- Prerequisites
+- 8-12 modules with 3-5 lessons each
+- Learning outcomes
+- Estimated total hours
+- Certificate details
+
+Format clearly with module numbers and lesson titles.`;
+    const result = await callClaude(prompt, 'You are a senior QA trainer creating structured course content for Indian IT professionals.');
+    lastGeneratedCourse = { title: topic, desc: result.substring(0,200), outline: result };
+    showOutput('course-gen-output','course-gen-loading','course-gen-actions', result);
+    toast('Course outline generated!','success');
+  } catch(e) {
+    showOutput('course-gen-output','course-gen-loading',null,'<span style="color:var(--danger)">Error: '+e.message+'</span>');
+    toast('Generation failed','error');
+  }
+}
+
+function saveGeneratedCourse() {
+  if (!lastGeneratedCourse) return;
+  const courses = DB.get('courses');
+  courses.unshift({
+    id: Date.now().toString(),
+    title: lastGeneratedCourse.title,
+    desc: lastGeneratedCourse.desc,
+    type: 'free', price: '', lessons: '12', duration: '10 hours',
+    status: 'draft', date: new Date().toLocaleDateString('en-IN')
+  });
+  DB.set('courses', courses);
+  toast('Course saved!','success');
+  renderDashboard();
+}
+
+async function generateSEO() {
+  if (!getApiKey()) { toast('Add your API key in Settings first','error'); return; }
+  const topic = document.getElementById('seo-topic').value.trim() || 'QA testing career guide';
+  setLoading('seo-gen-output','seo-gen-loading','seo-gen-actions',true);
+  toast('Optimising for Google…','ai');
+  try {
+    const prompt = `Generate SEO metadata for this QA testing page: "${topic}"
+Target audience: Indian IT professionals.
+
+Provide:
+1. Page Title (55-60 chars, include year 2025)
+2. Meta Description (145-155 chars, compelling, with CTA)
+3. H1 Tag suggestion
+4. 8 target keywords (mix of short and long-tail)
+5. 3 related article ideas for internal linking
+6. Schema markup type recommendation
+
+Format clearly with labels.`;
+    const result = await callClaude(prompt, 'You are an SEO expert specializing in Indian IT and software testing content.');
+    showOutput('seo-gen-output','seo-gen-loading','seo-gen-actions', result);
+    toast('SEO data generated!','success');
+  } catch(e) {
+    showOutput('seo-gen-output','seo-gen-loading',null,'<span style="color:var(--danger)">Error: '+e.message+'</span>');
+    toast('Generation failed','error');
+  }
+}
+
+// ── QUICK GENERATORS ──
+function quickGenArticle() { showPanel('ai'); setTimeout(()=>{ document.getElementById('art-topic').focus(); }, 300); }
+function quickGenQuestion() { showPanel('ai'); setTimeout(()=>{ document.getElementById('q-topic').focus(); document.querySelector('.ai-gen-panel:nth-child(3)')?.scrollIntoView({behavior:'smooth'}); }, 300); }
+
+async function aiGenerateCourse() {
+  const topic = prompt('Enter course topic:');
+  if (!topic) return;
+  document.getElementById('course-topic').value = topic;
+  showPanel('ai');
+  setTimeout(generateCourseOutline, 300);
+}
+
+// ── BATCH GENERATOR ──
+let batchItems = [];
+async function startBatch() {
+  if (!getApiKey()) { toast('Add your API key in Settings first','error'); return; }
+  const type = document.getElementById('batch-type').value;
+  const cat = document.getElementById('batch-category').value;
+  const count = parseInt(document.getElementById('batch-count').value);
+  const length = document.getElementById('batch-length').value;
+  const topicsRaw = document.getElementById('batch-topics').value.trim();
+  
+  let topics = topicsRaw ? topicsRaw.split('\n').filter(t=>t.trim()).slice(0,count) : [];
+  
+  // Auto-generate topics if needed
+  if (topics.length < count) {
+    toast('Getting topic ideas…','ai');
+    try {
+      const topicPrompt = `Generate ${count - topics.length} specific, engaging article titles for a QA testing blog targeting Indian IT professionals. Category: ${cat}. Return ONLY the titles, one per line, no numbering.`;
+      const topicResult = await callClaude(topicPrompt);
+      const autoTopics = topicResult.split('\n').filter(t=>t.trim()).slice(0,count-topics.length);
+      topics = [...topics, ...autoTopics];
+    } catch(e) {
+      toast('Could not generate topics: '+e.message,'error'); return;
+    }
+  }
+
+  batchItems = topics.slice(0,count).map((t,i) => ({ id: i, title: t.trim(), status: 'pending', content: null }));
+  renderBatchQueue();
+  document.getElementById('batchStartBtn').disabled = true;
+  document.getElementById('batch-progress').textContent = `0/${batchItems.length} complete`;
+
+  for (let i = 0; i < batchItems.length; i++) {
+    batchItems[i].status = 'generating';
+    renderBatchQueue();
+    try {
+      const wordCounts = {short:'600',medium:'1200'};
+      const prompt = `Write a ${wordCounts[length]||'1200'}-word professional QA article titled: "${batchItems[i].title}"
+Category: ${cat}. ${indiaContext()}
+Format as clean HTML with subheadings. Write the article now:`;
+      const result = await callClaude(prompt, 'You are a QA expert writing for TestPro India, an Indian testing platform.');
+      batchItems[i].content = result;
+      batchItems[i].status = 'done';
+      batchItems[i].category = cat;
+    } catch(e) {
+      batchItems[i].status = 'error';
+      batchItems[i].error = e.message;
+    }
+    document.getElementById('batch-progress').textContent = `${i+1}/${batchItems.length} complete`;
+    renderBatchQueue();
+    if (i < batchItems.length-1) await new Promise(r=>setTimeout(r,500));
+  }
+  
+  const done = batchItems.filter(b=>b.status==='done').length;
+  document.getElementById('batchStartBtn').disabled = false;
+  document.getElementById('batchSaveBtn').style.display = done > 0 ? '' : 'none';
+  toast(`Batch done! ${done}/${batchItems.length} generated`,'success');
+}
+
+function renderBatchQueue() {
+  const q = document.getElementById('batch-queue');
+  if (!batchItems.length) {
+    q.innerHTML = '<div class="empty-state"><div class="ico">🚀</div><h4>Queue empty</h4><p>Configure and start a batch generation above</p></div>';
+    return;
+  }
+  q.innerHTML = batchItems.map(b=>`
+    <div class="batch-row">
+      <div class="batch-title">${b.title}</div>
+      <span class="batch-status ${b.status}">${b.status==='generating'?'⚡ Generating…':b.status==='done'?'✓ Done':b.status==='error'?'✕ Error':'⏳ Pending'}</span>
+    </div>`).join('');
+}
+
+function saveAllBatch() {
+  const done = batchItems.filter(b=>b.status==='done');
+  if (!done.length) { toast('No completed items to save','error'); return; }
+  const arts = DB.get('articles');
+  done.forEach(b => {
+    arts.unshift({
+      id: Date.now().toString()+Math.random(),
+      title: b.title, category: b.category||'General',
+      content: b.content, status: 'draft',
+      readtime: '8', meta: '', date: new Date().toLocaleDateString('en-IN'),
+      updated: new Date().toLocaleDateString('en-IN')
+    });
+  });
+  DB.set('articles', arts);
+  toast(`${done.length} articles saved!`,'success');
+  renderDashboard();
+  batchItems = [];
+  document.getElementById('batchSaveBtn').style.display = 'none';
+  renderBatchQueue();
+}
+
+function clearBatch() {
+  batchItems = [];
+  document.getElementById('batchSaveBtn').style.display = 'none';
+  document.getElementById('batch-progress').textContent = '';
+  renderBatchQueue();
+}
+
+// ── SETTINGS ──
+function saveSettings() { toast('Settings saved!','success'); }
+
+function saveGHSettings() {
+  const token = document.getElementById('gh-token').value.trim();
+  const user = document.getElementById('gh-user').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  if (!token||!user||!repo) { toast('Fill in all GitHub fields','error'); return; }
+  DB.setS('gh_token', token);
+  DB.setS('gh_user', user);
+  DB.setS('gh_repo', repo);
+  toast('GitHub settings saved!','success');
+  updatePublishBtn();
+}
+
+function loadGHSettings() {
+  const t=DB.getS('gh_token'); const u=DB.getS('gh_user'); const r=DB.getS('gh_repo');
+  if(t) document.getElementById('gh-token').value=t;
+  if(u) document.getElementById('gh-user').value=u;
+  if(r) document.getElementById('gh-repo').value=r;
+}
+
+async function testGHConnection() {
+  const token=DB.getS('gh_token'); const user=DB.getS('gh_user'); const repo=DB.getS('gh_repo');
+  if(!token||!user||!repo){toast('Save GitHub settings first','error');return;}
+  const el=document.getElementById('gh-status');
+  el.textContent='Testing…'; el.style.color='var(--muted)';
+  try {
+    const r=await fetch(`https://api.github.com/repos/${user}/${repo}`,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
+    if(r.ok){el.textContent='✅ Connected! Repository found.';el.style.color='var(--accent)';toast('GitHub connected!','success');}
+    else{el.textContent='❌ Could not connect. Check your token and repo name.';el.style.color='var(--danger)';toast('Connection failed','error');}
+  } catch(e){el.textContent='❌ Error: '+e.message;el.style.color='var(--danger)';}
+}
+
+async function publishToGitHub() {
+  const token=DB.getS('gh_token'); const user=DB.getS('gh_user'); const repo=DB.getS('gh_repo');
+  if(!token||!user||!repo){toast('Set up GitHub in Settings first','error');showPanel('settings');return;}
+  
+  const btn=document.getElementById('publishBtn');
+  btn.textContent='⏳ Publishing…'; btn.disabled=true;
+  toast('Publishing to GitHub…','ai');
+
+  // Build content.json from local DB
+  const contentJson = {
+    articles: DB.get('articles'),
+    questions: DB.get('questions'),
+    courses: DB.get('courses'),
+    settings: { siteName:'TestPro India', domain:'testproindia.com', showAds:true, indiaFocus:true },
+    lastUpdated: new Date().toISOString()
+  };
+
+  try {
+    // Get current file SHA (needed for update)
+    const getResp = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/content.json`,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
+    let sha = null;
+    if(getResp.ok){const gd=await getResp.json();sha=gd.sha;}
+
+    // Push updated content.json
+    const body={message:'Update content via TestPro Admin — '+new Date().toLocaleString('en-IN'),content:btoa(unescape(encodeURIComponent(JSON.stringify(contentJson,null,2))))};
+    if(sha) body.sha=sha;
+
+    const putResp=await fetch(`https://api.github.com/repos/${user}/${repo}/contents/content.json`,{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    
+    if(putResp.ok){
+      toast('✅ Published! Site will update in ~30 seconds','success');
+      btn.textContent='✅ Published!';
+      setTimeout(()=>{btn.textContent='🚀 Publish to Live Site';btn.disabled=false;},3000);
+    } else {
+      const err=await putResp.json();
+      throw new Error(err.message||'GitHub push failed');
+    }
+  } catch(e) {
+    toast('Publish failed: '+e.message,'error');
+    btn.textContent='🚀 Publish to Live Site';
+    btn.disabled=false;
+  }
+}
+
+function updatePublishBtn() {
+  const btn=document.getElementById('publishBtn');
+  if(!btn) return;
+  const hasGH=DB.getS('gh_token')&&DB.getS('gh_user')&&DB.getS('gh_repo');
+  btn.style.opacity=hasGH?'1':'0.5';
+  btn.title=hasGH?'Publish content to GitHub':'Configure GitHub in Settings first';
+}
+
+function showGHHelp() {
+  alert('Setup Guide:\n\n1. Create a FREE GitHub account at github.com\n2. Create a new repository named "testproindia" (set it to Public)\n3. Upload all your site files to that repo\n4. Go to github.com/settings/tokens → Generate new token (classic) → check the "repo" checkbox\n5. Copy the token and paste it here\n6. Connect your repo to Netlify for free hosting\n\nNetlify will auto-update your site every time you click Publish!');
+}
+function confirmClear() {
+  if (!confirm('Delete ALL articles, questions, and courses? This cannot be undone.')) return;
+  ['articles','questions','courses','media'].forEach(k=>DB.set(k,[]));
+  renderDashboard(); toast('All data cleared');
+}
+
+// ── INIT ──
+updateApiStatus();
+renderDashboard();
+loadGHSettings();
+updatePublishBtn();
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Questions — TestPro India | QA Interview Prep</title>
+<meta name="description" content="Top software testing interview questions and expert answers. Prepare for QA interviews at TCS, Infosys, Wipro, HCL and more Indian IT companies.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .page-hero{padding:100px 5vw 60px;background:linear-gradient(135deg,#f0fdf9,#e6f1fb);border-bottom:1px solid var(--border)}
+  .iq-section{padding:3rem 5vw 5rem}.iq-inner{max-width:var(--max);margin:0 auto}
+  .iq-layout{display:grid;grid-template-columns:240px 1fr;gap:2rem}
+  .iq-filters{position:sticky;top:80px;align-self:start}
+  .filter-group{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+  .filter-group h4{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
+  .filter-chip{display:block;padding:7px 12px;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;color:var(--ink2);transition:all .15s;border:none;background:none;width:100%;text-align:left}
+  .filter-chip:hover{background:var(--surface)}
+  .filter-chip.active{background:rgba(0,200,150,.1);color:#008060;font-weight:600}
+  .q-list{display:flex;flex-direction:column;gap:.75rem}
+  .q-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
+  .q-card:hover{border-color:rgba(0,200,150,.3)}
+  .q-header{padding:1.25rem 1.5rem;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+  .q-question{font-weight:600;font-size:.9rem;line-height:1.45;flex:1}
+  .q-meta{display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
+  .q-toggle{font-size:.8rem;color:var(--muted);flex-shrink:0;transition:transform .2s}
+  .q-card.open .q-toggle{transform:rotate(180deg)}
+  .q-body{display:none;padding:0 1.5rem 1.25rem;border-top:1px solid var(--border)}
+  .q-card.open .q-body{display:block}
+  .q-answer{font-size:.875rem;color:var(--ink2);line-height:1.75;margin-top:1rem}
+  .q-tip{background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.2);border-radius:8px;padding:.75rem 1rem;margin-top:.75rem;font-size:.82rem;color:#008060}
+  .diff-badge{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px}
+  .diff-Beginner{background:rgba(0,200,150,.1);color:#008060}
+  .diff-Intermediate{background:rgba(245,158,11,.1);color:#854F0B}
+  .diff-Advanced{background:rgba(239,68,68,.1);color:#A32D2D}
+  @media(max-width:768px){.iq-layout{grid-template-columns:1fr}.iq-filters{position:static}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div class="page-hero">
+  <div style="max-width:760px;margin:0 auto">
+    <div class="section-tag">Interview Prep</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">QA Interview Questions & Expert Answers</h1>
+    <p class="lead" style="margin-top:1rem">Real questions from TCS, Infosys, Wipro, HCL, Cognizant interviews — with detailed answers to help you crack your next QA role.</p>
+  </div>
+</div>
+<div class="iq-section"><div class="iq-inner">
+  <div class="ad-slot ad-banner" style="margin-bottom:2rem"><div><p>Advertisement</p><small>728×90 — Google AdSense</small></div></div>
+  <div class="iq-layout">
+    <div class="iq-filters">
+      <div class="filter-group">
+        <h4>Category</h4>
+        <button class="filter-chip active" onclick="doFilter('cat','all',this)">All Categories</button>
+        <button class="filter-chip" onclick="doFilter('cat','General',this)">General QA</button>
+        <button class="filter-chip" onclick="doFilter('cat','Selenium',this)">Selenium</button>
+        <button class="filter-chip" onclick="doFilter('cat','ISTQB',this)">ISTQB</button>
+        <button class="filter-chip" onclick="doFilter('cat','API Testing',this)">API Testing</button>
+        <button class="filter-chip" onclick="doFilter('cat','Performance',this)">Performance</button>
+        <button class="filter-chip" onclick="doFilter('cat','Agile',this)">Agile / Scrum</button>
+      </div>
+      <div class="filter-group">
+        <h4>Difficulty</h4>
+        <button class="filter-chip active" onclick="doFilter('diff','all',this)">All Levels</button>
+        <button class="filter-chip" onclick="doFilter('diff','Beginner',this)">Beginner</button>
+        <button class="filter-chip" onclick="doFilter('diff','Intermediate',this)">Intermediate</button>
+        <button class="filter-chip" onclick="doFilter('diff','Advanced',this)">Advanced</button>
+      </div>
+    </div>
+    <div>
+      <div id="qCount" style="font-size:.82rem;color:var(--muted);margin-bottom:1rem"></div>
+      <div id="qList" class="q-list"><div style="color:var(--muted)">Loading questions…</div></div>
+    </div>
+  </div>
+</div></div>
+<div id="footer-placeholder"></div>
+<script src="shared.js"></script>
+<script>
+let all=[],catF='all',diffF='all';
+function toggle(id){const c=document.getElementById('qc-'+id);c.classList.toggle('open');}
+function doFilter(type,val,btn){
+  if(type==='cat'){catF=val;document.querySelectorAll('.filter-group:first-child .filter-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  else{diffF=val;document.querySelectorAll('.filter-group:last-child .filter-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  render();
+}
+function render(){
+  const list=all.filter(q=>(catF==='all'||q.category===catF)&&(diffF==='all'||q.difficulty===diffF));
+  document.getElementById('qCount').textContent=list.length+' question'+(list.length!==1?'s':'');
+  if(!list.length){document.getElementById('qList').innerHTML='<p style="color:var(--muted)">No questions match this filter. More coming soon!</p>';return;}
+  document.getElementById('qList').innerHTML=list.map(q=>`
+    <div class="q-card" id="qc-${q.id}">
+      <div class="q-header" onclick="toggle('${q.id}')">
+        <div><div class="q-question">${q.question}</div>
+        <div class="q-meta"><span class="diff-badge diff-${q.difficulty}">${q.difficulty}</span><span style="font-size:.72rem;color:var(--muted)">${q.category}</span></div></div>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-body">
+        <div class="q-answer">${q.answer}</div>
+        ${q.tip?`<div class="q-tip">💡 <strong>Pro Tip:</strong> ${q.tip}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+async function load(){
+  try{const r=await fetch('content.json?v='+Date.now());const d=await r.json();all=d.questions||[];render();}
+  catch(e){document.getElementById('qList').innerHTML='<p style="color:var(--muted)">Could not load questions.</p>';}
+}
+load();
+</script>
+</body>
+</html>

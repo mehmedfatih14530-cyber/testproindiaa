@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free QA Courses — TestPro India | Learn Software Testing</title>
+<meta name="description" content="Free and premium software testing courses for Indian QA engineers. ISTQB prep, Selenium automation, API testing, and more.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .page-hero{padding:100px 5vw 60px;background:linear-gradient(135deg,#f0fdf9,#e6f1fb);border-bottom:1px solid var(--border)}
+  .courses-section{padding:3rem 5vw 5rem}.courses-inner{max-width:var(--max);margin:0 auto}
+  .courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;margin-top:2rem}
+  .course-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#fff;transition:transform .2s,box-shadow .2s}
+  .course-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.08)}
+  .course-header{padding:1.75rem 1.75rem 1rem}
+  .course-badge{display:inline-block;padding:3px 12px;border-radius:100px;font-size:.72rem;font-weight:700;margin-bottom:1rem}
+  .badge-free{background:rgba(0,200,150,.12);color:#008060}.badge-paid{background:rgba(255,107,53,.12);color:#c0440a}
+  .course-icon{font-size:2.5rem;margin-bottom:1rem}
+  .course-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.6rem;line-height:1.3}
+  .course-card p{font-size:.875rem;color:var(--muted);line-height:1.65}
+  .course-meta{display:flex;flex-wrap:wrap;gap:.4rem;padding:0 1.75rem 1.25rem}
+  .meta-tag{background:var(--surface);padding:3px 10px;border-radius:100px;font-size:.72rem;color:var(--muted);font-weight:500}
+  .course-footer{padding:1.25rem 1.75rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+  .course-price{font-family:var(--font-display);font-size:1.3rem;font-weight:800}
+  .enroll-btn{background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;font-size:.875rem;font-weight:500;border:none;cursor:pointer;transition:background .2s;text-decoration:none;display:inline-block}
+  .enroll-btn:hover{background:var(--accent)}
+  .enroll-btn.accent{background:var(--warn)}.enroll-btn.accent:hover{background:#e05520}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div class="page-hero">
+  <div style="max-width:760px;margin:0 auto">
+    <div class="section-tag">Learning Paths</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">Free &amp; Premium Courses for Indian QA Engineers</h1>
+    <p class="lead" style="margin-top:1rem">Structured learning paths built specifically for the Indian IT job market.</p>
+  </div>
+</div>
+<div class="courses-section"><div class="courses-inner">
+  <div class="ad-slot ad-banner"><div><p>Advertisement</p><small>728×90 — Google AdSense</small></div></div>
+  <div class="section-tag">All Courses</div>
+  <h2>Start Learning Today</h2>
+  <div id="coursesGrid" class="courses-grid"><div style="color:var(--muted)">Loading courses…</div></div>
+</div></div>
+<div id="footer-placeholder"></div>
+<script src="shared.js"></script>
+<script>
+async function load(){
+  try{
+    const r=await fetch('content.json?v='+Date.now());const d=await r.json();
+    const courses=(d.courses||[]).filter(c=>c.status==='published');
+    if(!courses.length){document.getElementById('coursesGrid').innerHTML='<p style="color:var(--muted)">Courses coming soon!</p>';return;}
+    document.getElementById('coursesGrid').innerHTML=courses.map(c=>`
+      <div class="course-card reveal">
+        <div class="course-header">
+          <span class="course-badge ${c.type==='free'?'badge-free':'badge-paid'}">${c.type==='free'?'FREE':'PAID'}</span>
+          <div class="course-icon">${c.icon||'📚'}</div>
+          <h3>${c.title}</h3>
+          <p>${c.desc||''}</p>
+        </div>
+        <div class="course-meta">
+          ${c.lessons?`<span class="meta-tag">${c.lessons} lessons</span>`:''}
+          ${c.level?`<span class="meta-tag">${c.level}</span>`:''}
+          ${c.duration?`<span class="meta-tag">${c.duration}</span>`:''}
+          <span class="meta-tag">Certificate</span>
+        </div>
+        <div class="course-footer">
+          <div class="course-price">${c.type==='free'?'Free':'₹'+c.price}<small style="font-size:.78rem;color:var(--muted);font-family:var(--font-body);font-weight:400">${c.type==='paid'?' one-time':''}</small></div>
+          <a href="contact.html" class="enroll-btn ${c.type==='paid'?'accent':''}">${c.type==='free'?'Start Free →':'Enroll Now →'}</a>
+        </div>
+      </div>`).join('');
+    setTimeout(()=>document.querySelectorAll('.reveal').forEach((el,i)=>setTimeout(()=>el.classList.add('visible'),i*80)),50);
+  }catch(e){document.getElementById('coursesGrid').innerHTML='<p style="color:var(--muted)">Could not load courses.</p>';}
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Articles — TestPro India | QA Testing Blog</title>
+<meta name="description" content="Browse all software testing articles on TestPro India. Selenium, ISTQB, API Testing, Performance Testing, Career advice and more.">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .page-hero{padding:100px 5vw 60px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .articles-section{padding:3rem 5vw 5rem}.articles-inner{max-width:var(--max);margin:0 auto}
+  .filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2.5rem}
+  .filter-btn{padding:7px 18px;border-radius:100px;font-size:.82rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--muted);transition:all .15s}
+  .filter-btn.active,.filter-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+  .article-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;background:#fff;text-decoration:none;color:inherit}
+  .article-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.08);border-color:rgba(0,200,150,.3)}
+  .article-thumb{height:170px;display:flex;align-items:center;justify-content:center;font-size:3rem}
+  .article-body{padding:1.4rem;flex:1;display:flex;flex-direction:column}
+  .article-tag{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:.85rem}
+  .article-card h3{font-size:1rem;font-weight:700;line-height:1.35;margin-bottom:.5rem}
+  .article-card p{font-size:.85rem;color:var(--muted);flex:1;line-height:1.6}
+  .article-footer{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+  .skel{border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .skel-t{height:170px;background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:sh 1.4s infinite}
+  .skel-b{padding:1.4rem}.skel-l{height:12px;border-radius:6px;background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:sh 1.4s infinite;margin-bottom:.75rem}
+  @keyframes sh{to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div class="page-hero">
+  <div style="max-width:760px;margin:0 auto">
+    <div class="section-tag">Knowledge Base</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">All Articles</h1>
+    <p class="lead" style="margin-top:1rem">Practical, no-fluff content written by working QA professionals for the Indian IT market.</p>
+  </div>
+</div>
+<div class="articles-section"><div class="articles-inner">
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="doFilter('all',this)">All Topics</button>
+    <button class="filter-btn" onclick="doFilter('Selenium',this)">Selenium</button>
+    <button class="filter-btn" onclick="doFilter('ISTQB',this)">ISTQB</button>
+    <button class="filter-btn" onclick="doFilter('Career',this)">Career</button>
+    <button class="filter-btn" onclick="doFilter('API Testing',this)">API Testing</button>
+    <button class="filter-btn" onclick="doFilter('Performance',this)">Performance</button>
+    <button class="filter-btn" onclick="doFilter('Salary',this)">Salary Guide</button>
+  </div>
+  <div class="ad-slot ad-banner"><div><p>Advertisement</p><small>728x90 — Google AdSense</small></div></div>
+  <div id="grid" class="articles-grid"></div>
+</div></div>
+<div id="footer-placeholder"></div>
+<script src="shared.js"></script>
+<script>
+const CS={'Selenium':{bg:'rgba(0,102,255,.1)',tx:'#185FA5',th:'linear-gradient(135deg,#dbeafe,#bfdbfe)',em:'🤖'},'ISTQB':{bg:'rgba(0,200,150,.1)',tx:'#008060',th:'linear-gradient(135deg,#d1fae5,#a7f3d0)',em:'📋'},'Career':{bg:'rgba(245,158,11,.1)',tx:'#854F0B',th:'linear-gradient(135deg,#fef3c7,#fde68a)',em:'🚀'},'API Testing':{bg:'rgba(139,92,246,.1)',tx:'#534AB7',th:'linear-gradient(135deg,#ede9fe,#ddd6fe)',em:'🔗'},'Performance':{bg:'rgba(239,68,68,.1)',tx:'#A32D2D',th:'linear-gradient(135deg,#ffe4e6,#fecdd3)',em:'⚡'},'Salary':{bg:'rgba(16,185,129,.1)',tx:'#065F46',th:'linear-gradient(135deg,#d1fae5,#6ee7b7)',em:'💰'},'General':{bg:'rgba(107,114,128,.1)',tx:'#374151',th:'linear-gradient(135deg,#f3f4f6,#e5e7eb)',em:'📄'},'Tools':{bg:'rgba(251,146,60,.1)',tx:'#92400E',th:'linear-gradient(135deg,#ffedd5,#fed7aa)',em:'🛠️'}};
+let all=[],cf='all';
+function skel(){document.getElementById('grid').innerHTML=Array(6).fill('<div class="skel"><div class="skel-t"></div><div class="skel-b"><div class="skel-l" style="width:40%"></div><div class="skel-l"></div><div class="skel-l"></div></div></div>').join('');}
+function render(){
+  const g=document.getElementById('grid');
+  const list=cf==='all'?all:all.filter(a=>a.category===cf);
+  if(!list.length){g.innerHTML='<p style="color:var(--muted);padding:2rem 0;grid-column:1/-1">No articles in this category yet — check back soon!</p>';return;}
+  g.innerHTML=list.map(a=>{const c=CS[a.category]||CS['General'];return`<a href="article.html?id=${a.id}" class="article-card reveal"><div class="article-thumb" style="background:${a.color||c.th}">${a.emoji||c.em}</div><div class="article-body"><span class="article-tag" style="background:${a.tagColor||c.bg};color:${a.tagText||c.tx}">${a.category}</span><h3>${a.title}</h3><p>${a.excerpt||''}</p><div class="article-footer"><span>⏱ ${a.readtime||5} min</span><span>${a.date||''}</span></div></div></a>`;}).join('');
+  setTimeout(()=>document.querySelectorAll('.reveal').forEach((el,i)=>setTimeout(()=>el.classList.add('visible'),i*80)),50);
+}
+function doFilter(cat,btn){cf=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+async function load(){
+  skel();
+  try{const r=await fetch('content.json?v='+Date.now());const d=await r.json();all=(d.articles||[]).filter(a=>a.status==='published');
+  const uc=new URLSearchParams(location.search).get('cat');
+  if(uc){cf=uc;document.querySelectorAll('.filter-btn').forEach(b=>{if(b.textContent.trim()===uc)b.classList.add('active');else b.classList.remove('active');});}
+  render();}catch(e){document.getElementById('grid').innerHTML='<p style="color:var(--muted);padding:2rem 0;grid-column:1/-1">Could not load articles. Please refresh.</p>';}
+}
+load();
+</script>
+</body>
+</html>

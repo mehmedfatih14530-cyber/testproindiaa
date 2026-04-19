@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Set Up Selenium WebDriver with Java in 2024 — TestPro India</title>
+<meta name="description" content="Complete step-by-step guide to set up Selenium WebDriver with Java, Maven, and TestNG in 2024. Perfect for Indian QA engineers starting automation testing.">
+<meta name="keywords" content="selenium webdriver java setup, selenium tutorial india, automation testing setup, selenium maven testng">
+<meta property="og:title" content="Selenium WebDriver Java Setup Guide 2024 — TestPro India">
+<meta property="og:description" content="Step-by-step Selenium setup for Java beginners. Written for Indian QA engineers.">
+<meta property="og:type" content="article">
+<link rel="canonical" href="https://testproindia.com/articles/selenium-java-setup-2024.html">
+<link rel="stylesheet" href="../shared.css">
+<style>
+  .article-hero { padding: 100px 5vw 60px; background: linear-gradient(135deg, #f0fdf9 0%, #e6f1fb 100%); border-bottom: 1px solid var(--border); }
+  .article-hero-inner { max-width: 860px; margin: 0 auto; }
+  .article-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 1.25rem 0 1.5rem; font-size: .82rem; color: var(--muted); }
+  .article-meta .dot { width: 3px; height: 3px; background: var(--muted); border-radius: 50%; }
+  .article-body { max-width: 860px; margin: 0 auto; padding: 3rem 5vw 4rem; }
+  .article-body h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--surface); }
+  .article-body h3 { font-size: 1.1rem; margin: 1.75rem 0 .75rem; }
+  .article-body p { font-size: 1rem; line-height: 1.8; margin-bottom: 1.25rem; color: #2a2f3d; }
+  .article-body ul, .article-body ol { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+  .article-body li { font-size: 1rem; line-height: 1.8; margin-bottom: .4rem; color: #2a2f3d; }
+  .article-body a { color: var(--accent2); text-decoration: underline; }
+  pre { background: #0e1117; color: #e2e8f0; padding: 1.5rem; border-radius: 10px; overflow-x: auto; font-size: .875rem; line-height: 1.7; margin: 1.5rem 0; }
+  code { font-family: 'Courier New', monospace; }
+  p code { background: var(--surface); padding: 2px 7px; border-radius: 4px; font-size: .875em; color: #cc4a00; }
+  .callout { background: rgba(0,200,150,.08); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1.5rem 0; font-size: .95rem; }
+  .callout strong { color: #008060; display: block; margin-bottom: .25rem; }
+  .warning { background: rgba(255,107,53,.07); border-left-color: var(--warn); }
+  .warning strong { color: var(--warn); }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--accent); color: #fff; border-radius: 50%; font-size: .78rem; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+  .step { display: flex; align-items: flex-start; gap: .5rem; margin-bottom: .75rem; }
+  .toc { background: var(--surface); border-radius: 10px; padding: 1.25rem 1.5rem; margin: 2rem 0; }
+  .toc h4 { font-size: .875rem; font-weight: 700; margin-bottom: .75rem; }
+  .toc ol { padding-left: 1.25rem; }
+  .toc li { font-size: .875rem; margin-bottom: .4rem; }
+  .toc a { color: var(--accent2); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .author-box { background: var(--surface); border-radius: 12px; padding: 1.5rem; display: flex; gap: 1rem; align-items: flex-start; margin-top: 3rem; }
+  .author-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; flex-shrink: 0; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .related-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; transition: all .2s; }
+  .related-card:hover { border-color: rgba(0,200,150,.4); transform: translateY(-2px); }
+  .related-card h4 { font-size: .95rem; font-weight: 700; margin-bottom: .4rem; line-height: 1.3; }
+  .related-card p { font-size: .8rem; color: var(--muted); }
+  .sidebar { position: sticky; top: 80px; }
+  .article-layout { display: grid; grid-template-columns: 1fr 300px; gap: 3rem; max-width: 1200px; margin: 0 auto; padding: 3rem 5vw 4rem; }
+  @media (max-width: 900px) { .article-layout { grid-template-columns: 1fr; } .sidebar { position: static; } }
+  .sidebar-widget { background: var(--surface); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  .sidebar-widget h4 { font-size: .875rem; font-weight: 700; margin-bottom: 1rem; }
+  .sidebar-links li { font-size: .85rem; margin-bottom: .6rem; list-style: none; }
+  .sidebar-links a { color: var(--ink2); transition: color .2s; display: flex; align-items: center; gap: 6px; }
+  .sidebar-links a:hover { color: var(--accent); }
+  .newsletter-widget input { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: .85rem; margin-bottom: .5rem; outline: none; }
+  .newsletter-widget input:focus { border-color: var(--accent); }
+  .newsletter-widget button { width: 100%; background: var(--accent); color: #fff; border: none; padding: 9px; border-radius: 6px; font-size: .875rem; font-weight: 500; cursor: pointer; transition: background .2s; }
+  .newsletter-widget button:hover { background: #00a878; }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="article-hero">
+  <div class="article-hero-inner">
+    <div class="breadcrumb">
+      <a href="/index.html">Home</a>
+      <span>›</span>
+      <a href="/articles.html">Articles</a>
+      <span>›</span>
+      <span>Selenium</span>
+    </div>
+    <span class="pill" style="background:rgba(0,102,255,.1);color:#185FA5;margin-bottom:1rem;display:inline-block">Selenium</span>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.8rem);max-width:700px">How to Set Up Selenium WebDriver with Java in 2024 (Step-by-Step)</h1>
+    <div class="article-meta">
+      <span>By TestPro Team</span>
+      <div class="dot"></div>
+      <span>December 1, 2024</span>
+      <div class="dot"></div>
+      <span>⏱ 8 min read</span>
+      <div class="dot"></div>
+      <span>Beginner–Intermediate</span>
+    </div>
+    <p style="font-size:1.05rem;color:var(--ink2);max-width:640px;line-height:1.7">The complete beginner's guide to setting up Selenium WebDriver with Java, Maven, and TestNG — tested and working in 2024. Written specifically for Indian QA engineers.</p>
+  </div>
+</div>
+
+<div class="article-layout">
+  <article class="article-body" style="padding:0">
+
+    <!-- AD BANNER TOP -->
+    <div class="ad-slot ad-banner">
+      <div><p>Advertisement</p><small>Google AdSense — 728×90 Leaderboard</small></div>
+    </div>
+
+    <div class="toc">
+      <h4>📋 Table of Contents</h4>
+      <ol>
+        <li><a href="#prerequisites">Prerequisites & What You'll Need</a></li>
+        <li><a href="#install-java">Step 1 — Install Java JDK</a></li>
+        <li><a href="#install-eclipse">Step 2 — Install Eclipse IDE</a></li>
+        <li><a href="#create-maven">Step 3 — Create a Maven Project</a></li>
+        <li><a href="#add-selenium">Step 4 — Add Selenium Dependencies</a></li>
+        <li><a href="#first-test">Step 5 — Write Your First Test</a></li>
+        <li><a href="#run-test">Step 6 — Run & Verify</a></li>
+        <li><a href="#common-errors">Common Errors & Fixes</a></li>
+      </ol>
+    </div>
+
+    <div class="callout">
+      <strong>✅ What you'll achieve</strong>
+      By the end of this guide you'll have a working Selenium project that opens Chrome, navigates to a website, and verifies elements — ready to build on for real projects.
+    </div>
+
+    <h2 id="prerequisites">Prerequisites & What You'll Need</h2>
+    <p>Before we start, make sure you have the following. Don't worry — everything listed here is free:</p>
+    <ul>
+      <li>A Windows, Mac, or Linux machine (Windows 10/11 recommended for beginners)</li>
+      <li>Stable internet connection to download tools</li>
+      <li>Basic understanding of Java syntax (variables, methods, classes)</li>
+      <li>Around 2 GB of free disk space</li>
+    </ul>
+    <p>If you're completely new to Java, spend one week on a free Java basics course on YouTube first. Then come back here — this guide will make much more sense.</p>
+
+    <h2 id="install-java">Step 1 — Install Java JDK</h2>
+    <p>Selenium requires Java to be installed on your machine. We'll use Java 17 LTS (Long Term Support), which is stable and well-supported.</p>
+    <div class="step"><span class="step-num">1</span><span>Go to <strong>adoptium.net</strong> and download the <strong>Temurin JDK 17</strong> for your OS</span></div>
+    <div class="step"><span class="step-num">2</span><span>Run the installer. On Windows, check "Set JAVA_HOME variable" during installation</span></div>
+    <div class="step"><span class="step-num">3</span><span>Verify installation — open Command Prompt and run:</span></div>
+    <pre><code>java -version
+# Expected output:
+# openjdk version "17.0.x" ...</code></pre>
+    <div class="warning callout">
+      <strong>⚠️ Common Mistake</strong>
+      Many beginners download Java from oracle.com and face licensing issues. Use Adoptium (Eclipse Temurin) — it's 100% free and open-source.
+    </div>
+
+    <h2 id="install-eclipse">Step 2 — Install Eclipse IDE</h2>
+    <p>Eclipse is the most popular IDE for Selenium automation in India's IT industry. It's free and what most companies use.</p>
+    <div class="step"><span class="step-num">1</span><span>Go to <strong>eclipse.org/downloads</strong> and download "Eclipse IDE for Java Developers"</span></div>
+    <div class="step"><span class="step-num">2</span><span>Extract the zip and run <code>eclipse.exe</code> (Windows) or <code>eclipse</code> (Mac/Linux)</span></div>
+    <div class="step"><span class="step-num">3</span><span>Choose a workspace folder — e.g. <code>C:\SeleniumWorkspace</code></span></div>
+
+    <h2 id="create-maven">Step 3 — Create a Maven Project</h2>
+    <p>Maven manages your project dependencies automatically. Instead of downloading Selenium JARs manually, Maven downloads and updates them for you.</p>
+    <div class="step"><span class="step-num">1</span><span>In Eclipse: <strong>File → New → Maven Project</strong></span></div>
+    <div class="step"><span class="step-num">2</span><span>Check "Create a simple project (skip archetype selection)"</span></div>
+    <div class="step"><span class="step-num">3</span><span>Fill in: Group ID: <code>com.testpro</code>, Artifact ID: <code>selenium-project</code></span></div>
+    <div class="step"><span class="step-num">4</span><span>Click Finish. Eclipse creates the Maven project structure</span></div>
+
+    <h2 id="add-selenium">Step 4 — Add Selenium Dependencies</h2>
+    <p>Open the <code>pom.xml</code> file in your project. Replace its contents with the following — this adds Selenium 4, TestNG, and WebDriverManager (which handles ChromeDriver automatically):</p>
+    <pre><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.testpro&lt;/groupId&gt;
+  &lt;artifactId&gt;selenium-project&lt;/artifactId&gt;
+  &lt;version&gt;1.0&lt;/version&gt;
+
+  &lt;dependencies&gt;
+    &lt;!-- Selenium WebDriver --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+      &lt;artifactId&gt;selenium-java&lt;/artifactId&gt;
+      &lt;version&gt;4.15.0&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- WebDriverManager - auto manages ChromeDriver --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;io.github.bonigarcia&lt;/groupId&gt;
+      &lt;artifactId&gt;webdrivermanager&lt;/artifactId&gt;
+      &lt;version&gt;5.6.3&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- TestNG --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.testng&lt;/groupId&gt;
+      &lt;artifactId&gt;testng&lt;/artifactId&gt;
+      &lt;version&gt;7.8.0&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+    <p>Save the file. Maven will automatically download all dependencies. This may take 2–5 minutes on first run.</p>
+
+    <h2 id="first-test">Step 5 — Write Your First Test</h2>
+    <p>Create a new Java class in <code>src/test/java</code> called <code>FirstSeleniumTest.java</code>:</p>
+    <pre><code>import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+public class FirstSeleniumTest {
+
+    WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() {
+        // WebDriverManager handles ChromeDriver automatically
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+    }
+
+    @Test
+    public void verifyGoogleTitle() {
+        driver.get("https://www.google.com");
+
+        // Verify the page title contains "Google"
+        String title = driver.getTitle();
+        Assert.assertTrue(title.contains("Google"),
+            "Page title should contain 'Google' but was: " + title);
+
+        System.out.println("Test PASSED! Title: " + title);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}</code></pre>
+
+    <h2 id="run-test">Step 6 — Run & Verify</h2>
+    <p>Right-click the test class → <strong>Run As → TestNG Test</strong>. You should see:</p>
+    <ul>
+      <li>Chrome browser opens automatically</li>
+      <li>Google.com loads</li>
+      <li>Browser closes after the test</li>
+      <li>TestNG console shows: <code>Tests run: 1, Failures: 0</code></li>
+    </ul>
+    <div class="callout">
+      <strong>🎉 Congratulations!</strong>
+      You've just run your first automated test. From here you can expand this to test login forms, search functionality, and entire user flows.
+    </div>
+
+    <h2 id="common-errors">Common Errors & Fixes</h2>
+    <h3>1. "ChromeDriver version mismatch"</h3>
+    <p>This used to be a common headache. Since we're using <strong>WebDriverManager</strong>, it auto-downloads the right version. If you still see this error, check that your internet connection is active when running tests.</p>
+    <h3>2. "Cannot find symbol: WebDriverManager"</h3>
+    <p>Maven hasn't downloaded dependencies yet. Right-click project → Maven → Update Project, or run <code>mvn clean install</code> in terminal.</p>
+    <h3>3. Test runs but Chrome opens and immediately closes</h3>
+    <p>Add <code>Thread.sleep(3000);</code> before <code>driver.quit()</code> temporarily to debug — this is almost always a timing issue in the test logic.</p>
+
+    <!-- AD -->
+    <div class="ad-slot ad-banner" style="margin:2.5rem 0">
+      <div><p>Advertisement</p><small>Google AdSense — 728×90</small></div>
+    </div>
+
+    <h2>Next Steps — What to Learn After This</h2>
+    <p>Now that your basic setup works, here's the recommended learning path:</p>
+    <ol>
+      <li><strong>Locators</strong> — ID, Name, XPath, CSS Selector (XPath is most used in Indian companies)</li>
+      <li><strong>Page Object Model (POM)</strong> — Industry-standard design pattern, asked in every automation interview</li>
+      <li><strong>TestNG annotations</strong> — @BeforeClass, @DataProvider, @Parameters</li>
+      <li><strong>Waits</strong> — Explicit waits vs Implicit waits (another very common interview question)</li>
+      <li><strong>Extent Reports</strong> — Generate professional HTML test reports</li>
+    </ol>
+
+    <div class="author-box">
+      <div class="author-avatar">TP</div>
+      <div>
+        <div style="font-weight:700;font-size:.95rem">TestPro Editorial Team</div>
+        <div style="font-size:.8rem;color:var(--muted);margin:.25rem 0 .5rem">Pune, Maharashtra</div>
+        <div style="font-size:.875rem;color:var(--ink2)">Written by working QA professionals with 5+ years in the Indian IT industry. We test the code before we write about it.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:3rem">
+      <h3 style="margin-bottom:1rem">Related Articles</h3>
+      <div class="related-grid">
+        <a href="istqb-foundation-guide.html" class="related-card">
+          <span class="pill" style="background:rgba(0,200,150,.1);color:#008060;margin-bottom:.75rem;display:inline-block">ISTQB</span>
+          <h4>ISTQB Foundation Level: Complete Guide for Indian Candidates</h4>
+          <p>12 min read</p>
+        </a>
+        <a href="manual-to-automation.html" class="related-card">
+          <span class="pill" style="background:rgba(245,158,11,.1);color:#854F0B;margin-bottom:.75rem;display:inline-block">Career</span>
+          <h4>Manual to Automation: 6-Month Roadmap for Indian IT Pros</h4>
+          <p>15 min read</p>
+        </a>
+        <a href="api-testing-questions.html" class="related-card">
+          <span class="pill" style="background:rgba(139,92,246,.1);color:#534AB7;margin-bottom:.75rem;display:inline-block">API Testing</span>
+          <h4>Top 50 API Testing Interview Questions 2024</h4>
+          <p>18 min read</p>
+        </a>
+      </div>
+    </div>
+
+  </article>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- AD Square -->
+    <div class="ad-slot ad-square" style="margin-bottom:1.25rem">
+      <div><p>Advertisement</p><small>300×250 Medium Rectangle</small></div>
+    </div>
+
+    <div class="sidebar-widget">
+      <h4>📧 Get Weekly QA Tips</h4>
+      <div class="newsletter-widget">
+        <input type="email" placeholder="your@email.com" id="nb-email">
+        <button onclick="nbSubscribe()">Subscribe Free</button>
+      </div>
+      <p style="font-size:.72rem;color:var(--muted);margin-top:.5rem">No spam. Unsubscribe anytime.</p>
+    </div>
+
+    <div class="sidebar-widget">
+      <h4>🔥 Popular Articles</h4>
+      <ul class="sidebar-links">
+        <li><a href="istqb-foundation-guide.html">→ ISTQB Foundation Guide</a></li>
+        <li><a href="manual-to-automation.html">→ Manual to Automation Roadmap</a></li>
+        <li><a href="api-testing-questions.html">→ API Testing Interview Q&A</a></li>
+        <li><a href="jmeter-beginners.html">→ JMeter Beginner Tutorial</a></li>
+        <li><a href="qa-salary-india.html">→ QA Salary Guide India 2024</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-widget">
+      <h4>🎓 Free Courses</h4>
+      <ul class="sidebar-links">
+        <li><a href="/courses.html">→ QA Fundamentals (Free)</a></li>
+        <li><a href="/courses.html">→ Selenium Zero to Hero (Free)</a></li>
+        <li><a href="/courses.html">→ Interview Mastery (Premium)</a></li>
+      </ul>
+    </div>
+
+    <!-- AD Square 2 -->
+    <div class="ad-slot ad-square">
+      <div><p>Advertisement</p><small>300×250 Medium Rectangle</small></div>
+    </div>
+  </aside>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="../shared.js"></script>
+<script>
+function nbSubscribe() {
+  const email = document.getElementById('nb-email').value.trim();
+  if (!email || !email.includes('@')) return;
+  const btn = document.querySelector('.newsletter-widget button');
+  btn.textContent = "You're in! 🎉";
+  btn.style.background = '#008060';
+  document.getElementById('nb-email').value = '';
+}
+</script>
+</body>
+</html>
